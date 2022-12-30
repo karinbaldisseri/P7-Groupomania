@@ -7,11 +7,11 @@ const commentControl = require('../controllers/commentcontroller');
 
 //ROUTES
 
-router.post('/:postId', auth, commentControl.createComment);
+router.post('/:postId/comments', auth, commentControl.createComment);
+router.get('/:postId/comments', auth, commentControl.getAllCommentsByPost);
 //router.get('/:id', auth, commentControl.getOneComment);
-router.get('/:postId', auth, commentControl.getAllCommentsByPost);
-router.put('/:id', auth, commentControl.modifyComment);
-router.delete('/:id', auth, commentControl.deleteComment);
+router.put('/:postId/comments/:id', auth, commentControl.modifyComment);
+router.delete('/:postId/comments/:id', auth, commentControl.deleteComment);
 
 // EXPORTS
 module.exports = router;

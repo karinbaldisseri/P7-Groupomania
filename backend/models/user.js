@@ -43,9 +43,9 @@ const User = dbSequelize.define('user', {
     get() {
       return `${this.firstname}${this.lastname}`;
     },
-    set(value) {
+    /* set(value) {
       throw new Error('Do not try to set the "username" value !');
-    }
+    } */
   }
 });
 

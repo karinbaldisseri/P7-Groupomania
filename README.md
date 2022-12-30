@@ -11,7 +11,7 @@ Projet n°7 du parcours Développeur Web d'OpenClassrooms : "Créez un réseau s
              Express
              Mysql
              Sequelize
-    CLIENT : vite.js
+    CLIENT : vitejs
              React
 
 ## 📦 Installation des packages et démarrage des serveurs

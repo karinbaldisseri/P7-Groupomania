@@ -114,7 +114,7 @@ exports.modifyUser = (req, res) => {
     const userData = { ...req.body };
     // if use id as params in url => check id = id in url & id in auth
     // User.findOne({ where: { [Op.and]: [{ id: req.params.id }, { id: req.auth.userId }] } })
-        User.findOne({ attributes: ['id', 'firstname', 'lastname', 'username'], where: { id: req.auth.userId } })
+        User.findOne({ attributes: ['id', 'firstname', 'lastname'], where: { id: req.auth.userId } })
         .then((user) => {
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized request !' });
@@ -166,7 +166,7 @@ exports.deleteUser = (req, res) => {
 
     // if use id as params in url => check id = id in url & id in auth
     // User.findOne({ where: {[Op.and]: [{id: req.params.id}, {id: req.auth.userId}]} })
-    User.findOne({ attributes: ['id', 'firstname', 'lastname'], where: { id: req.auth.userId } })
+    User.findOne({ where: { id: req.auth.userId } })
         .then((user) => {
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized request !' });
@@ -205,9 +205,11 @@ exports.deactivateUser = (req, res) => {
             }
         })
         .catch(() => res.status(500).json({ error: 'Internal server error' }));
-        //BUT !!! like still exists so if LIKE.COUNT done it will be wrong... or let likesTotal as is ?
+    //BUT !!! if admin reactivates in DB  likes/dislikesTotal in Post is wrong : create recativate function available only to admin ?
+    // OR do a likeCount (counting only likes where user isactive) at beginning of getAllPosts & get one post (then increment/decrement likes not needed in decativate & delete user)
+
     
-    User.findOne({ attributes: ['id', 'firstname', 'lastname'], where: { id: req.auth.userId } })
+    User.findOne({ where: { id: req.auth.userId } })
         .then((user) => {
             if (user) {
                 User.update({ isActive: false }, { where: { id: req.auth.userId } })
@@ -216,10 +218,10 @@ exports.deactivateUser = (req, res) => {
                     /* .then((deactivatedUser) => {
                         deactivatedUser.destroy({ where: { updatedAt: { [Op.lte]: new Date(Date.now() - (10 * 1000)) } } })
                     }) */
-                    .catch(() => res.status(500).json({ error: 'Internal server error 1' }));
+                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
             } else {
                 return res.status(401).json({ error: 'Unauthorized request !' });
             }
         })
-        .catch(() => res.status(500).json({ error: 'Internal server error 2' }))
+        .catch(() => res.status(500).json({ error: 'Internal server error' }))
 };

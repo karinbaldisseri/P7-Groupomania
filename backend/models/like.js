@@ -11,7 +11,7 @@ const Like = dbSequelize.define('like', {
   likeValue: {
     allowNull: false,
     type: Sequelize.INTEGER,
-    defaultValue: 1 // OBLIGÉ ??
+    defaultValue: 1 // OBLIGÉ ??  NON
     // pas besoin car je ne gère que les cas 1, 0 et -1 
     /* type: Sequelize.ENUM,
     values: [1, -1] */ /// mais fait crasher l'app => if error => throw new Error('Do not try to set the "username" value !');

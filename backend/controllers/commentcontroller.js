@@ -47,26 +47,26 @@ exports.createComment = (req, res) => {
 
 // READ - Get all comments -> GET
 exports.getAllCommentsByPost = (req, res) => {
-    let page = parseInt(req.query.page)
-    let limit = parseInt(req.query.limit)
+    let page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
 
-    if (!Number.isFinite(limit) || limit <= 0 || limit > 50) {
+    if (!limit || !Number.isFinite(limit) || limit <= 0 || limit > 50) {
         limit = 5;
-        return res.status(400).json({ error: 'Client input error' });
     }
-    if (!Number.isFinite(page) || page <= 0) {
+    if (!page || !Number.isFinite(page) || page <= 0) {
         page = 1;
-        return res.status(400).json({ error: 'Client input error' });
     }
         
     Comment.findAndCountAll({
-        where: {[Op.and]: [ {postid: req.params.postId}, {[ "$user.isActive$" ]: true } ]},
-        include: [{ model: User, required: true, attributes: ['id', 'username', 'isActive']}],
+        where: {[Op.and]: [ {postid: req.params.postId} ]},
+        include: [{ model: User, required: true, where: { isActive: true }, attributes: ['id', 'firstname', 'lastname', 'username']}],
         order: [['createdAt', 'DESC']],
         limit : limit,
         offset: ((page - 1) * limit)
     })
         .then((comments) => {
+            console.log('COMMENTS');
+            console.log(comments);
             if (!comments) {
                 return res.status(404).json({ error: 'Resource not found' });
             } else {
@@ -81,7 +81,8 @@ exports.getAllCommentsByPost = (req, res) => {
                     items: comments.rows,
                 })
                 } else {
-                    return res.status(400).json({ error: 'Client input error' });
+                    // in case comments.count=0 comments.rows=[] (sinon tourne dans le vide)
+                    return res.status(200).json({ message : 'No comments to show' });
                 }
             }
         }) 

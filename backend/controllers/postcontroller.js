@@ -2,6 +2,8 @@ const fs = require('fs');
 // const paginate = require('../middlewares/paginate');
 const Post = require('../models/post');
 const User = require('../models/user');
+const Comment = require('../models/comment');
+const Like = require('../models/like');
 
 
 // CREATE new post -> POST
@@ -24,9 +26,11 @@ exports.createPost = (req, res) => {
 exports.getOnePost = (req, res) => {
     Post.findOne({
         where: { id: req.params.id, userId: req.auth.userId },
-        include: [{ model: User, required: true, attributes: ['id', 'username', 'isActive'] }]
+        include: [{ association: 'user', attributes: ['id', 'firstname', 'lastname', 'username', 'isActive'] }]
+        //include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'username', 'isActive'] }]
+        // include comments ? or use getAllCommentsByPost
     }) 
-        .then((post) => {
+        .then((post) => {   
             if (!post) {
                 return res.status(404).json({ error: 'Resource not found' })
             } else if (post.user.isActive === false) {
@@ -40,64 +44,21 @@ exports.getOnePost = (req, res) => {
 };
 
 // READ - Get all posts -> GET
-/* exports.getAllPosts = (req, res) => {
-    const page = parseInt(req.query.page)
-    const limit = parseInt(req.query.limit)
-
-    if (!Number.isFinite(limit) || limit <= 0 || limit > 50) {
-        //return res.badRequest('Please try again with limit between 1 and 50 !')
-        return res.status(400).json({ error: 'Client input error' });
-    }
-
-    if (!Number.isFinite(page) || page <= 0) {
-        //return res.badRequest('Please try again with valid page number')
-        return res.status(400).json({ error: 'Client input error' });
-    }
-        
-    Post.findAll({
-        include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'isActive']}],
-        order: [['createdAt', 'DESC']],
-        limit : limit,
-        offset: ((page - 1) * limit)
-    })
-        .then((posts) => {
-            if (posts && posts.length > 0) {
-                Post.count()
-                    .then((totalPostCount) => {
-                        const totalPages = Math.ceil(totalPostCount / limit)
-                        return res.status(200).json({
-                            totalCount: totalPostCount,
-                            itemsCount: posts.length,
-                            totalPages,
-                            nextPage: page < totalPages ? page + 1 : null,
-                            previousPage: page > 1 ? page - 1 : null,
-                            items: posts,
-                        })
-                    })
-                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
-            } else {
-                return res.status(400).json({ error: 'Client input error' });
-            }
-        })
-        .catch(() => res.status(500).json({ error : 'Internal server error' }));
-}; */
-// is it possible to create a middleware to use here ? in case you wann do the sme in comments ??
-
 exports.getAllPosts = (req, res) => {
-    let page = parseInt(req.query.page)
-    let limit = parseInt(req.query.limit)
+    let page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
 
-    if (!Number.isFinite(limit) || limit <= 0 || limit > 50) {
+    if (!limit || !Number.isFinite(limit) || limit <= 0 || limit > 50) {
         limit = 10;
-        return res.status(400).json({ error: 'Client input error' });
     }
-    if (!Number.isFinite(page) || page <= 0) {
+    if (!page || !Number.isFinite(page) || page <= 0) {
         page = 1;
-        return res.status(400).json({ error: 'Client input error' });
     }
         
     Post.findAndCountAll({
-        include: [{ model: User, where: {isActive: true} , attributes: ['id', 'username', 'isActive']}],
+        // distinct: true,
+        include: [{ model: User, required: true, where: { isActive: true }, attributes: ['id', 'firstname', 'lastname', 'username'] }],
+        // to be able to use/ get virtual field 'username' (included in query), you have to add the attributes related to it (firstname + lastname)
         order: [['createdAt', 'DESC']],
         limit : limit,
         offset: ((page - 1) * limit)
@@ -107,24 +68,26 @@ exports.getAllPosts = (req, res) => {
                 return res.status(404).json({ error: 'Resource not found' });
             } else {
                 if (posts.rows && posts.rows.length > 0) {
-                const totalPages = Math.ceil(posts.count / limit)
-                return res.status(200).json({
-                    totalCount: posts.count,
-                    itemsCount: posts.rows.length,
-                    totalPages,
-                    nextPage: page < totalPages ? page + 1 : null,
-                    previousPage: page > 1 ? page - 1 : null,
-                    items: posts.rows,
-                })
+                    const totalPages = Math.ceil(posts.count / limit)
+                    return res.status(200).json({
+                        totalCount: posts.count,
+                        itemsCount: posts.rows.length,
+                        totalPages,
+                        nextPage: page < totalPages ? page + 1 : null,
+                        previousPage: page > 1 ? page - 1 : null,
+                        items: posts.rows
+                    })
                 } else {
-                    return res.status(400).json({ error: 'Client input error' });
-                }
+                    // in case comments.count=0 comments.rows=[] (sinon tourne dans le vide)
+                    return res.status(200).json({ message : 'Postboard is empty' });
+                } 
             } 
         }) 
         .catch(() => res.status(500).json({ error : 'Internal server error' }));
 }
 
 /* exports.getAllPosts = (req, res) => {
+    récupérer les query 
     paginatedPosts = paginate.paginatedResults(Post);
     return res.status(200).json(paginatedPosts);
 }; */

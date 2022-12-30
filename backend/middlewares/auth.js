@@ -11,6 +11,6 @@ module.exports = (req, res, next) => {
         req.auth = { userId, isAdmin };
         next();
     } catch(error) {
-        res.status(500).json({ error /*: 'Auth error'*/ });  
+        res.status(500).json({ error });  
     }
 };

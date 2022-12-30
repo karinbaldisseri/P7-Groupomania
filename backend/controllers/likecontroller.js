@@ -1,8 +1,10 @@
 const Post = require('../models/post');
 const Like = require('../models/like');
+const User = require('../models/user');
 
 
 // Manage Likes and Dislikes
+// // CREATE like -> POST
 exports.addOrRemoveLike = async (req, res) => {
     Post.findOne({ where: { id: req.params.id } })
         .then((post) => {
@@ -67,4 +69,25 @@ exports.addOrRemoveLike = async (req, res) => {
         .catch(() => res.status(500).json({ error: 'Internal server error' }));
 };
 
+// READ - Get likes & dislikes Totals -> GET
+exports.likeCount = async (req, res) => {
+    try {
+        const likesTotal = await Like.count({
+            where: { postId: req.params.id, likeValue: 1 },
+            include: [{ model: User, required: true, where: { isActive: true } }]
+        });
+
+        const dislikesTotal = await Like.count({
+            where: { postId: req.params.id, likeValue: -1 },
+            include: [{ model: User, required: true, where: { isActive: true } }]
+        });
+
+        res.status(200).json({
+            likesTotal,
+            dislikesTotal
+        });
+    } catch (err) {
+        return res.status(500).json({ error: 'Internal server error' })
+    }
+ };
 
