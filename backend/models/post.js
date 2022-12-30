@@ -17,18 +17,6 @@ const Post = dbSequelize.define('post', {
   imageUrl: {
     allowNull: true,
     type: Sequelize.STRING
-  },
-  likesTotal: {
-    allowNull: false,
-    type: Sequelize.INTEGER.UNSIGNED,
-    defaultValue: 0
-    // est-il possible de compter le nombre de likes ? value: {Likes.count( {where: {postId: this.id, likeValue: 1} })}
-  },
-  dislikesTotal: {
-    allowNull: false,
-    type: Sequelize.INTEGER.UNSIGNED,
-    defaultValue: 0
-    // est-il possible de compter le nombre de dislikes ? value: {Likes.count( {where: {postId: this.id, likeValue: -1} })}
   }
 });
 

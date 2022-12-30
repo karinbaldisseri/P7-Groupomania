@@ -28,23 +28,6 @@ exports.createComment = (req, res) => {
     }
 };
 
-// READ - Get single Comment -> GET
-/* exports.getOneComment = (req, res) => {
-    Comment.findOne({
-        where: { id: req.params.id, userId: req.auth.userId },
-        include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'isActive'] },
-        { model: Post, required: true, attributes: ['id']}]
-    }) 
-        .then((comment) => {
-            if (!comment) {
-                return res.status(404).json({ error : 'Resource not found' })
-            }
-            res.status(200).json(comment)
-        })
-        .catch(() => res.status(500).json({ error: 'Internal server error' })
-        );
-}; */
-
 // READ - Get all comments -> GET
 exports.getAllCommentsByPost = (req, res) => {
     let page = parseInt(req.query.page);

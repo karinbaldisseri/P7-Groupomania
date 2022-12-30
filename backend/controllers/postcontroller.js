@@ -27,8 +27,6 @@ exports.getOnePost = (req, res) => {
     Post.findOne({
         where: { id: req.params.id, userId: req.auth.userId },
         include: [{ association: 'user', attributes: ['id', 'firstname', 'lastname', 'username', 'isActive'] }]
-        //include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'username', 'isActive'] }]
-        // include comments ? or use getAllCommentsByPost
     }) 
         .then((post) => {   
             if (!post) {

@@ -100,15 +100,6 @@ exports.getOneUser = (req, res) => {
         .catch(() => res.status(500).json({ error: 'Internal server error' }))
 }; 
 
-// GET ALL USERS info
-/* exports.getAllUsers = (req, res) => {
-    User.findAll()
-        .then((users) => {
-            return res.status(200).json(users)
-        })
-        .catch(() => res.status(500).json({ error: 'Internal server error' }))
-}; */
-
 // MODIFY USER
 exports.modifyUser = (req, res) => {
     const userData = { ...req.body };
@@ -142,28 +133,6 @@ exports.modifyUser = (req, res) => {
 
 // DELETE USER
 exports.deleteUser = (req, res) => {
-    // find all user's likes (votes) if user is active (no need to decrement likestotal for unactive user's like)
-    Like.findAll({ where: { userId: req.auth.userId }, include: [{ model: User, where: {isActive: true} }] })
-        .then((likesFound) => {
-            for (let like of likesFound) {
-                // get postId of each like
-                const postId = like.postId;      
-                Post.findOne({ where: { id: postId } })
-                    .then((post) => {
-                        // if vote =like
-                        if (like.likeValue === 1) {
-                            post.decrement('likesTotal');
-                        //if vote = dislike
-                        } else if (like.likeValue === -1) {
-                            post.decrement('dislikesTotal');
-                        } else {
-                            return res.status(404).json({ error: 'Bad request !' });
-                        }
-                    })
-            }
-        })
-        .catch(() => res.status(500).json({ error: 'Internal server error' }));
-
     // if use id as params in url => check id = id in url & id in auth
     // User.findOne({ where: {[Op.and]: [{id: req.params.id}, {id: req.auth.userId}]} })
     User.findOne({ where: { id: req.auth.userId } })
@@ -182,42 +151,13 @@ exports.deleteUser = (req, res) => {
 };
 
 // DEACTIVATE USER
-// if deactivated , does admin change isActive in DB or ask a developper to do it?
+// if deactivated , admin change isActive in DB
 exports.deactivateUser = (req, res) => {
-    // find all user's likes (votes)
-    Like.findAll({ where: { userId: req.auth.userId} })
-        .then((likesFound) => {
-            for (let like of likesFound) {
-                // get postId of each like
-                const postId = like.postId;      
-                Post.findOne({ where: { id: postId } })
-                    .then((post) => {
-                        // if vote =like
-                        if (like.likeValue === 1) {
-                            post.decrement('likesTotal');
-                        //if vote = dislike
-                        } else if (like.likeValue === -1) {
-                            post.decrement('dislikesTotal');
-                        } else {
-                            return res.status(404).json({ error: 'Bad request !' });
-                        }
-                    })
-            }
-        })
-        .catch(() => res.status(500).json({ error: 'Internal server error' }));
-    //BUT !!! if admin reactivates in DB  likes/dislikesTotal in Post is wrong : create recativate function available only to admin ?
-    // OR do a likeCount (counting only likes where user isactive) at beginning of getAllPosts & get one post (then increment/decrement likes not needed in decativate & delete user)
-
-    
     User.findOne({ where: { id: req.auth.userId } })
         .then((user) => {
             if (user) {
                 User.update({ isActive: false }, { where: { id: req.auth.userId } })
                     .then(() => res.status(200).json({ message: "User deactivated !" }))
-                    // delete user after a certain time it has been deactivated ->  ne marche pas
-                    /* .then((deactivatedUser) => {
-                        deactivatedUser.destroy({ where: { updatedAt: { [Op.lte]: new Date(Date.now() - (10 * 1000)) } } })
-                    }) */
                     .catch(() => res.status(500).json({ error: 'Internal server error' }));
             } else {
                 return res.status(401).json({ error: 'Unauthorized request !' });
