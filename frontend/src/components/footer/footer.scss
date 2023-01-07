@@ -1,0 +1,25 @@
+@use "../../stylesUtils/" as *;
+
+footer {
+  height: 85px;
+  text-align: center;
+  margin-top: 30px;
+
+  img {
+    margin: 60px 0 40px;
+    height: 40px;
+
+    @include mobiles {
+      margin-bottom: 20px;
+    }
+  }
+
+  p {
+    color: $secondary-color;
+    font-size: 24px;
+
+    @include mobiles {
+      font-size: 14px;
+    }
+  }
+}

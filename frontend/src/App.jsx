@@ -1,19 +1,33 @@
 import { Routes, Route } from "react-router-dom";
-import './App.css'
+import Login from "./pages/login";
+import Signup from "./pages/signup";
+import Error from "./pages/error";
+import Postswall from "./pages/postswall";
+import Profile from "./pages/profile";
+import Footer from "./components/footer";
+import RequireAuth from "./components/requireAuth";
 
 function App() {
   return (
     <>
-      <Header />
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route exact path="/about" element={<About />} />
-        <Route exact path="/accommodation/:id" element={<Accommodation />} />
+        {/* Public Routes */}
+        <Route exact path="/" element={<Login />} />
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/signup" element={<Signup />} />
+
+        {/* Restricted / Protected Routes */}
+        <Route element={<RequireAuth />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/postswall" element={<Postswall />} />
+        </Route>
+
+        {/* Catch all / Error Routes */}
         <Route path="*" element={<Error />} />
       </Routes>
       <Footer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

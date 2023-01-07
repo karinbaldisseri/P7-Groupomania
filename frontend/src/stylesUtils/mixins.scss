@@ -1,0 +1,15 @@
+@use "../stylesUtils/variables.scss" as *;
+
+// media queries
+
+@mixin tablets {
+  @media all and (max-width: map-get($breakpoints, tablet)) {
+    @content;
+  }
+}
+
+@mixin mobiles {
+  @media all and (max-width: map-get($breakpoints, mobile)) {
+    @content;
+  }
+}

@@ -1,0 +1,109 @@
+@use "../../stylesUtils/" as *;
+
+.formContainer {
+  margin: 10% 0;
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  h1 {
+    font-size: 26px;
+    text-align: center;
+    border-radius: 0 10px 0 0;
+  }
+  p {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .offscreen {
+    position: absolute;
+    left: -9999px;
+  }
+  .errMsg {
+    background-color: $secondary-color;
+    color: $primary-color;
+    font-weight: bold;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  .formItems {
+    margin-top: 30px ;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    button{
+      width: 100%;
+      background-color: $primary-color;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+    .notDisabled:hover {
+          box-shadow: 1px 1px 4px 4px rgba(0, 0, 0, 0.15);
+        }
+    .disabled {
+      cursor: default;
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+    label {
+     text-align: left;
+     font-size: 12px;
+     display:flex;
+     align-items: center;
+    }
+    input {
+      flex: 2;
+      padding: 10px;
+      margin: 5px 0 10px 10px;
+      border: 2px solid rgb(233, 233, 233);
+      border-radius: 10px;
+      background-color: $background-primary;
+      &:focus {
+        outline: 3px solid $secondary-color;
+        border: none;
+      }
+    }
+    .instructions{
+      color: $primary-color;
+      svg {
+          margin-right: 10px;
+          fill: $primary-color;
+        }
+    }
+    .hide {
+      display: none;
+    }
+    .valid {
+      margin-left: 10px;
+      svg {
+        fill: limegreen;
+      }
+    }
+    .invalid {
+      margin-left: 10px;
+      svg {
+        fill: $primary-color;
+      }
+    }
+    .required {
+      color: $primary-color;
+      text-align: center;
+      margin-top: 10px;
+    }
+  }
+  .linkBtn {
+    border: none;
+    text-decoration: underline;
+    background-color: white;
+    cursor: pointer;
+  }
+}

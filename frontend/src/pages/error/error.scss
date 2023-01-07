@@ -1,0 +1,36 @@
+@use "../../stylesUtils/" as *;
+
+.errorPage {
+  text-align: center;
+  margin-bottom: 120px;
+
+  h1 {
+    color: $primary-color;
+    font-weight: 700;
+    font-size: 225px;
+    padding: 60px 0 30px 0;
+
+    @include tablets {
+      font-size: 175px;
+    }
+
+    @include mobiles {
+      font-size: 100px;
+      padding: 25vh 0 10px 0;
+    }
+  }
+
+  h2 {
+    color: $primary-color;
+    font-size: 30px;
+    margin-bottom: 120px;
+
+    @include mobiles {
+      font-size: 20px;
+      padding: 0 40px;
+    }
+  }
+  a {
+    color: $tertiary-color;
+  }
+}
