@@ -1,2 +1,47 @@
 @use "../../stylesUtils/" as *;
 
+.createPostForm {
+  align-items: flex-start;
+  background: white;
+  max-width: 600px;
+  margin: 20px 0;
+  padding: 20px;
+  width: 100%;
+  border-radius: 10px;
+  h2 {
+    font-size: 16px;
+    padding-left: 10px;
+  }
+  .formItems {
+    margin: 0;
+    input {
+      margin: 10px 0 0 0;
+      padding: 5px 15px;
+    }
+    #fileInput {
+      display:none;
+    }
+    .btnsContainer {
+      display: flex;
+      justify-content: space-between;
+      margin: 0 10px 0 10px;
+      button {
+        width: fit-content;
+        min-width: 120px;
+        font-size: 13px;
+        border-radius: 10px;
+        margin: 15px 0 0 0;
+        padding: 7px 10px;
+      }
+      #addImgBtn {
+        background-color: $border-color;
+      }
+      .addImgDisabled {
+        cursor: default;
+          &:hover {
+            opacity: 0.5;
+          }
+      }
+    }
+  }
+}

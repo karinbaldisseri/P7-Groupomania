@@ -51,11 +51,11 @@ function LoginForm({ onFormSwitch }) {
       navigate(from, { replace: true });
     } catch (err) {
       // (err?.response) = chainage optionnel (dans l'éventualité d'une référence manquante)
-      if (!err?.response) {
+      if (!err?.response || err.response.status === 500) {
         setErrMsg("Erreur interne du serveur");
-      } else if (err.response?.status === 400 || err.response?.status === 401) {
+      } else if (err.response.status === 400 || err.response?.status === 401) {
         setErrMsg("Erreur de saisie, veuillez vérifier les champs requis");
-      } else if (err.response?.status === 403) {
+      } else if (err.response.status === 403) {
         setErrMsg("Compte désactivé, merci de contacter votre administrateur");
       } else {
         setErrMsg("Désolé, la connexion n'a pas pu aboutir");

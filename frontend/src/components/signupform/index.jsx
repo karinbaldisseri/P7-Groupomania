@@ -94,11 +94,11 @@ function SignupForm({ onFormSwitch }) {
       // redirect to login
       window.location = "/login";
     } catch (err) {
-      if (!err?.response) {
+      if (!err?.response || err.response.status === 500) {
         setErrMsg("Erreur interne du serveur");
-      } else if (err.response?.status === 400) {
+      } else if (err.response.status === 400) {
         setErrMsg("Erreur de saisie, vérifiez tous les champs requis");
-      } else if (err.response?.status === 403) {
+      } else if (err.response.status === 403) {
         setErrMsg("Compte désactivé, merci de contacter votre administrateur");
       } else {
         setErrMsg("L'inscription n'a pas pu aboutir");

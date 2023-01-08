@@ -1,10 +1,9 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaCheck, FaInfoCircle, FaTimes } from "react-icons/fa";
-import { confirmAlert } from 'react-confirm-alert';
-import 'react-confirm-alert/src/react-confirm-alert.css';
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 import axios from "../../api/axios";
 import useAuth from "../../hooks/useAuth";
@@ -69,15 +68,15 @@ export default function ProfileForm() {
       try {
         const response = await axios.get("/api/auth/me", {
           headers: {
-            'Authorization': `Bearer ${auth.token}`,
+            Authorization: `Bearer ${auth.token}`,
           },
         });
         setFirstname(response.data.firstname);
         setLastname(response.data.lastname);
       } catch (err) {
-        if (!err?.response) {
+        if (!err?.response || err.response.status === 500) {
           setErrMsg("Erreur interne du serveur");
-        } else if (err.response?.status === 401) {
+        } else if (err.response.status === 401) {
           setErrMsg("Accès au profil non autorisé");
         } else {
           setErrMsg("Erreur de chargement des données");
@@ -104,23 +103,18 @@ export default function ProfileForm() {
           {
             headers: {
               "Content-Type": "application/json",
-              'Authorization': `Bearer ${auth.token}`,
+              Authorization: `Bearer ${auth.token}`,
             },
           }
         );
         // clear input fields (need value attributes in inputs for this)
-        setFirstname("");
-        setLastname("");
         setOldPassword("");
         setPassword("");
         setMatchPassword("");
-        // redirect to postswall ???
-        // window.location = "/postswall";
-        navigate("/profile");
       } catch (err) {
-        if (!err?.response) {
+        if (!err?.response || err.response.status === 500) {
           setErrMsg("Erreur interne du serveur");
-        } else if (err.response?.status === 401) {
+        } else if (err.response.status === 401) {
           setErrMsg("Erreur de saisie, vérifiez les champs modifiés");
         } else {
           setErrMsg("Les modifications n'ont pas pu être enregistrées");
@@ -128,28 +122,28 @@ export default function ProfileForm() {
         errRef.current.focus();
       }
     } else {
-        setErrMsg("Problème d'autorisation, veuillez réessayer svp!")
+      setErrMsg("Problème d'autorisation, veuillez réessayer svp!");
     }
   };
 
-  const handleDelete = async () => { 
+  const handleDelete = async () => {
     try {
-      await axios.delete("/api/auth/me",{
-          headers: {
-            'Authorization': `Bearer ${auth.token}`,
-          },
-        });
+      await axios.delete("/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
       setFirstname("");
       setLastname("");
       setOldPassword("");
       setPassword("");
       setMatchPassword("");
       // redirect to signup
-      window.location = "/signup";
+      navigate("/signup");
     } catch (err) {
-      if (!err?.response) {
+      if (!err?.response || err.response.status === 500) {
         setErrMsg("Erreur interne du serveur");
-      } else if (err.response?.status === 401) {
+      } else if (err.response.status === 401) {
         setErrMsg("Suppression non autorisée");
       } else {
         setErrMsg("La suppression du compte n'a pas aboutie");
@@ -161,20 +155,23 @@ export default function ProfileForm() {
   const confirmDelete = () => {
     confirmAlert({
       title: "Confirmation :",
-      message: "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes les données liées à ce compte seront perdues",
+      message:
+        "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes les données liées à ce compte seront perdues",
       buttons: [
         {
-          label: 'Confirmer', onClick: () => handleDelete(),
+          label: "Confirmer",
+          onClick: () => handleDelete(),
         },
         {
-          label: 'Annuler', onClick: () => navigate("/profile"),
+          label: "Annuler",
+          onClick: () => navigate("/profile"),
         },
-      ]
-    })
+      ],
+    });
   };
 
   return (
-    <article className="formContainer" >
+    <article className="formContainer">
       <form className="formItems" onSubmit={handleSubmitUpdate}>
         <p
           ref={errRef}
@@ -347,10 +344,11 @@ export default function ProfileForm() {
         >
           Enregistrer mes modifications
         </button>
-        { !errMsg &&
-          <button type="submit" className="deleteBtn" onClick={confirmDelete}>Supprimer mon compte</button>
-        }
-        
+        {!errMsg && (
+          <button type="submit" className="deleteBtn" onClick={confirmDelete}>
+            Supprimer mon compte
+          </button>
+        )}
       </form>
     </article>
   );

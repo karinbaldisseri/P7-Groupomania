@@ -7,8 +7,9 @@ export default function CreatePost() {
   const { auth } = useAuth();
   const [postText, setPostText] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const errRef = useRef();
+  const fileInput = useRef(); // or null ?
 
   useEffect(() => {
     setErrMsg("");
@@ -23,7 +24,8 @@ export default function CreatePost() {
         const data = new FormData();
         data.append("content", postText);
         if (imageUrl) {
-          data.append("imageUrl", imageUrl);
+          // imageUrl = used for useState / "image" = name used in multer => module.exports = multer({ storage }).single('image');
+          data.append("image", imageUrl);
         }
         await axios.post("/api/posts", data, {
           headers: {
@@ -34,9 +36,9 @@ export default function CreatePost() {
         setPostText("");
         setImageUrl("");
       } catch (err) {
-        if (!err?.response) {
+        if (!err?.response || err.response.status === 500) {
           setErrMsg("Erreur interne du serveur");
-        } else if (err.response?.status === 401) {
+        } else if (err.response.status === 401) {
           setErrMsg("Erreur de saisie, vérifiez tous les champs requis");
         } else {
           setErrMsg("Le post n'a pas pu être créé, merci de réessayer");
@@ -48,9 +50,13 @@ export default function CreatePost() {
   };
 
   return (
-    <article className="formContainer">
+    <article className="formContainer createPostForm">
       <h2>Exprimez-vous...</h2>
-      <form className="formItems" onSubmit={handleSubmit}>
+      <form
+        className="formItems"
+        encType="multipart/form-data"
+        onSubmit={handleSubmit}
+      >
         <p
           ref={errRef}
           className={errMsg ? "errMsg" : "offscreen"}
@@ -68,17 +74,30 @@ export default function CreatePost() {
         />
         <input
           type="file"
+          id="fileInput"
           name="imageUrl"
-          onChange={(e) => setImageUrl(e.target.files[0].name)}
+          onChange={(e) => setImageUrl(e.target.files[0])}
           accept="image/jpg, image/jpeg, image/png"
+          ref={fileInput}
         />
-        <button
-          type="submit"
-          disabled={!postText}
-          className={!postText ? "disabled" : "notDisabled"}
-        >
-          Poster
-        </button>
+        <div className="btnsContainer">
+          <button
+            type="button"
+            id="addImgBtn"
+            disabled={!postText}
+            className={!postText ? "addImgDisabled" : "notDisabled"}
+            onClick={() => fileInput.current.click()}
+          >
+            Ajouter une image
+          </button>
+          <button
+            type="submit"
+            disabled={!postText}
+            className={!postText ? "disabled" : "notDisabled"}
+          >
+            Poster
+          </button>
+        </div>
       </form>
     </article>
   );
