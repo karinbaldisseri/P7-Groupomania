@@ -9,12 +9,12 @@ export default function Header() {
 
   const handleLogout = () => {
     setAuth("");
-    window.location = "/login";
+    window.location = "/"; // replace navigate dont use window.location
   };
 
   return (
     <header>
-      <NavLink to="/">
+      <NavLink /* to="/" */ onClick={handleLogout}>
         <img
           src={RedLogo}
           alt="Logo de Groupomania"

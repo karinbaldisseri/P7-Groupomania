@@ -1,17 +1,9 @@
-import { useState } from "react";
-import "../signup/signup.scss";
 import LoginImg from "../../assets/buildings-img.jpeg";
 import WhiteLogo from "../../assets/icon-white.png";
-import SignupForm from "../../components/signupform";
 import LoginForm from "../../components/loginform";
+import "../signup/signup.scss";
 
 export default function Login() {
-  const [currentForm, setCurrentForm] = useState("loginForm");
-
-  const toggleForm = (formName) => {
-    setCurrentForm(formName);
-  };
-
   return (
     <main className="connectPage">
       <section className="connectMainSection">
@@ -27,11 +19,7 @@ export default function Login() {
           </div>
         </div>
         <div className="formCard">
-          {currentForm === "loginForm" ? (
-            <LoginForm onFormSwitch={toggleForm} />
-          ) : (
-            <SignupForm onFormSwitch={toggleForm} />
-          )}
+          <LoginForm />
         </div>
       </section>
     </main>

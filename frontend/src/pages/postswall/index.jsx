@@ -1,5 +1,5 @@
-import CreatePost from "../../components/createpost";
 import Header from "../../components/header";
+import PostsFeed from "../../components/postsfeed";
 import "./postswall.scss";
 
 export default function Postswall() {
@@ -7,10 +7,10 @@ export default function Postswall() {
     <>
       <Header />
       <main className="postswallPage">
-        <section className="postswallContainer">
+        <div className="postswallContainer">
           <h1>Fil d'actualités</h1>
-          <CreatePost />
-        </section>
+          <PostsFeed />
+        </div>
       </main>
     </>
   );

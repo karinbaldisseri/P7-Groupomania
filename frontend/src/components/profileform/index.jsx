@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCheck, FaInfoCircle, FaTimes } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-
+import { toast } from "react-toastify";
 import axios from "../../api/axios";
 import useAuth from "../../hooks/useAuth";
 import "../signupform/forms.scss";
@@ -92,7 +92,7 @@ export default function ProfileForm() {
     setErrMsg("");
     if (auth.token) {
       try {
-        await axios.put(
+        const updateData = axios.put(
           "/api/auth/me",
           JSON.stringify({
             firstname,
@@ -107,6 +107,11 @@ export default function ProfileForm() {
             },
           }
         );
+        // Toast
+        await toast.promise(updateData, {
+          pending: "Chargement en cours...",
+          success: "Profil modifié !",
+        });
         // clear input fields (need value attributes in inputs for this)
         setOldPassword("");
         setPassword("");
@@ -128,18 +133,26 @@ export default function ProfileForm() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete("/api/auth/me", {
+      const deleteData = axios.delete("/api/auth/me", {
         headers: {
           Authorization: `Bearer ${auth.token}`,
         },
       });
+      // TOAST
+      await toast.promise(deleteData, {
+        pending: "Chargement en cours...",
+        success: "Compte supprimé !",
+      });
+      // redirect to signup after toast shown
+      setTimeout(() => {
+        navigate("/signup");
+      }, 2000);
+      // clear input fields (need value attributes in inputs for this)
       setFirstname("");
       setLastname("");
       setOldPassword("");
       setPassword("");
       setMatchPassword("");
-      // redirect to signup
-      navigate("/signup");
     } catch (err) {
       if (!err?.response || err.response.status === 500) {
         setErrMsg("Erreur interne du serveur");
@@ -158,14 +171,53 @@ export default function ProfileForm() {
       message:
         "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes les données liées à ce compte seront perdues",
       buttons: [
-        {
-          label: "Confirmer",
-          onClick: () => handleDelete(),
-        },
-        {
-          label: "Annuler",
-          onClick: () => navigate("/profile"),
-        },
+        { label: "Confirmer", onClick: () => handleDelete() },
+        { label: "Annuler" /* , onClick: () => navigate("/profile" ) */ },
+      ],
+    });
+  };
+
+  const handleDeactivate = async () => {
+    if (auth.token || auth.isAdmin) {
+      try {
+        const updateData = axios.put(
+          "/api/auth/me/deactivate",
+          JSON.stringify({ isActive: false }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          }
+        );
+        await toast.promise(updateData, {
+          pending: "Chargement en cours...",
+          success: "Profil désactivé !",
+        });
+        navigate("/signup");
+      } catch (err) {
+        if (!err?.response || err.response.status === 500) {
+          setErrMsg("Erreur interne du serveur");
+        } else if (err.response.status === 401) {
+          setErrMsg("Erreur de saisie, vérifiez les champs modifiés");
+        } else {
+          setErrMsg("Les modifications n'ont pas pu être enregistrées");
+        }
+        errRef.current.focus();
+      }
+    } else {
+      setErrMsg("Problème d'autorisation, veuillez réessayer svp!");
+    }
+  };
+
+  const confirmDeactivate = () => {
+    confirmAlert({
+      title: "Confirmation :",
+      message:
+        "Votre profil et messages ne seront plus visibles, mais pourront être réactivés par votre administrateur. Êtes-vous sûr de vouloir désactiver votre compte ?",
+      buttons: [
+        { label: "Confirmer", onClick: () => handleDeactivate() },
+        { label: "Annuler" },
       ],
     });
   };
@@ -344,11 +396,18 @@ export default function ProfileForm() {
         >
           Enregistrer mes modifications
         </button>
-        {!errMsg && (
-          <button type="submit" className="deleteBtn" onClick={confirmDelete}>
-            Supprimer mon compte
-          </button>
-        )}
+        {/* {!errMsg && ( */}
+        <button type="button" className="deleteBtn" onClick={confirmDelete}>
+          Supprimer mon compte
+        </button>
+        <button
+          type="button"
+          className="deactivateBtn deleteBtn"
+          onClick={confirmDeactivate}
+        >
+          Désactiver mon compte
+        </button>
+        {/* )} */}
       </form>
     </article>
   );

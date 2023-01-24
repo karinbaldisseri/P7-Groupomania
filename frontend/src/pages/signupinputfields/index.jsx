@@ -1,14 +1,14 @@
 import { NavLink } from "react-router-dom";
 import SignupImg from "../../assets/buildings-img.jpeg";
 import WhiteLogo from "../../assets/icon-white.png";
-import SignupForm from "../../components/signupform";
-import "./signup.scss";
+import SignupFormInputFields from "../../components/signupforminputfields";
+import "../signup/signup.scss";
 
-export default function Signup() {
+export default function SignupInputFields() {
   return (
     <>
-      <NavLink to="/signupinputfields" className="temporary">
-        GO TO Signup with InputFields
+      <NavLink to="/signup" className="temporary">
+        GO TO Signup without Input fields
       </NavLink>
       <main className="connectPage">
         <section className="connectMainSection">
@@ -30,7 +30,7 @@ export default function Signup() {
             </div>
           </div>
           <div className="formCard">
-            <SignupForm />
+            <SignupFormInputFields />
           </div>
         </section>
       </main>

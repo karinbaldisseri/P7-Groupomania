@@ -1,20 +1,28 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import SignupInputFields from "./pages/signupinputfields";
 import Error from "./pages/error";
 import Postswall from "./pages/postswall";
 import Profile from "./pages/profile";
 import Footer from "./components/footer";
 import RequireAuth from "./components/requireAuth";
+import ToastConfig from "./components/toastconfig";
 
 function App() {
   return (
     <>
+      <ToastConfig />
       <Routes>
         {/* Public Routes */}
         <Route exact path="/" element={<Login />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
+        <Route
+          exact
+          path="/signupinputfields"
+          element={<SignupInputFields />}
+        />
 
         {/* Restricted / Protected Routes */}
         <Route element={<RequireAuth />}>

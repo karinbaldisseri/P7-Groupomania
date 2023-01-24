@@ -1,0 +1,38 @@
+@use "../../stylesUtils/" as *;
+
+.modifyPostPopup {
+  margin: 0;
+  .formItems {
+    
+    .content {
+      border-radius: 5px;
+      //margin-bottom: 10px;
+      padding: 5px 10px;
+      // line-height: 14px;
+    }
+    .btnsContainer {
+      margin: 10px;
+      align-items:center;
+      height: fit-content;
+      button {
+        margin-top: 5px;
+      }
+    }
+    .undoContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      .undoChanges {
+          color: $primary-color;
+          margin: 0 10px;
+      }
+      .infoIcon {
+        fill: $primary-color;
+        margin-left: 10px;
+      }
+    }
+    
+  }
+  
+}

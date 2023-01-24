@@ -1,7 +1,7 @@
 @use "../../stylesUtils/" as *;
 
 .formContainer {
-  margin: 10% 0;
+  margin: 10px 0;
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -24,12 +24,13 @@
     background-color: $secondary-color;
     color: $primary-color;
     font-weight: bold;
+    text-align: center;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
   }
   .formItems {
-    margin-top: 30px ;
+    margin-top: 20px ;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -60,9 +61,9 @@
      display:flex;
      align-items: center;
     }
-    input {
+    input, textarea {
       flex: 2;
-      padding: 10px;
+      padding: 8px 10px;
       margin: 5px 0 10px 10px;
       border: 2px solid rgb(233, 233, 233);
       border-radius: 10px;
@@ -97,13 +98,11 @@
     .required {
       color: $primary-color;
       text-align: center;
-      margin-top: 10px;
+      margin: 5px 0 5px 0;
     }
   }
-  .linkBtn {
-    border: none;
+  .link {
+    font-size: 12px;
     text-decoration: underline;
-    background-color: white;
-    cursor: pointer;
   }
 }

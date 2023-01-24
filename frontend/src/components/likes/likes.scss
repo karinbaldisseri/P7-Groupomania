@@ -1,0 +1,57 @@
+@use "../../stylesUtils/" as *;
+
+.likesAndComments {
+  display: flex;
+  justify-content: space-between;
+  button {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+  }
+  .commentBtn {
+    padding: 0 30px;
+    text-decoration: underline;
+    &:hover {
+        transform: scale(1.05);
+      }
+  }
+  .likesBtns {
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      button {
+        display: flex;
+        align-items: center;
+        &:hover {
+            transform: scale(1.15);
+          }
+      }
+      .thumbs {
+        fill: rgb(176, 175, 175);
+        width: 15px;
+        height: 15px;
+      } 
+      .up {
+        margin: 8px 2px 8px 10px;
+      }
+      .down {
+        margin: 12px 2px 6px 10px;
+      }
+      .liked {
+        fill: #f6b7b7;
+        transition: none;
+      }
+      .disliked {
+        fill: #a490b5;
+        transition: none;
+      }
+      p {
+        font-size: 12px;
+        font-weight: 400;
+        // text-decoration: none;
+      }
+    }
+}
+

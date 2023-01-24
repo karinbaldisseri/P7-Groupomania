@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaCheck, FaInfoCircle, FaTimes } from "react-icons/fa";
+import { toast } from "react-toastify";
 import axios from "../../api/axios";
 import "./forms.scss";
 
-function SignupForm({ onFormSwitch }) {
+function SignupForm() {
+  const navigate = useNavigate();
   // to put focus on input when page loads
   const focusRef = useRef();
   // to put focus on the error when there is one
@@ -43,11 +45,11 @@ function SignupForm({ onFormSwitch }) {
 
   useEffect(() => {
     setValidFirstname(nameRegExp.test(firstname));
-  }, [firstname]); // shorter syntax
+  }, [firstname]);
 
   useEffect(() => {
     setValidLastname(nameRegExp.test(lastname));
-  }, [lastname]); // longer syntax
+  }, [lastname]);
 
   useEffect(() => {
     setValidEmail(emailRegExp.test(email));
@@ -66,10 +68,10 @@ function SignupForm({ onFormSwitch }) {
     e.preventDefault();
     // security in case button is enabled with JS hack
     if (
-      !nameRegExp.test(firstname) ||
-      !nameRegExp.test(lastname) ||
-      !emailRegExp.test(email) ||
-      !passwordRegExp.test(password)
+      !validFirstname ||
+      !validLastname ||
+      !validEmail ||
+      !validPassword
       // || !form.reportValidity() // not sure correct syntax ?? add const form = document.querySelector(".formItems");
     ) {
       setErrMsg(
@@ -78,23 +80,30 @@ function SignupForm({ onFormSwitch }) {
       return;
     }
     try {
-      await axios.post(
+      const signupData = axios.post(
         "/api/auth/signup",
         JSON.stringify({ firstname, lastname, email, password }),
         {
           headers: { "Content-Type": "application/json" },
         }
       );
+      // TOAST
+      await toast.promise(signupData, {
+        pending: "Chargement en cours...",
+        success: "Nouveau compte crée !",
+      });
+      // redirect to login after toast shown
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
       // clear input fields (need value attributes in inputs for this)
       setFirstname("");
       setLastname("");
       setEmail("");
       setPassword("");
       setMatchPassword("");
-      // redirect to login
-      window.location = "/login";
     } catch (err) {
-      if (!err?.response || err.response.status === 500) {
+      if (err.response.status === 500) {
         setErrMsg("Erreur interne du serveur");
       } else if (err.response.status === 400) {
         setErrMsg("Erreur de saisie, vérifiez tous les champs requis");
@@ -118,6 +127,7 @@ function SignupForm({ onFormSwitch }) {
         >
           {errMsg}
         </p>
+
         <label htmlFor="firstname">
           Prénom :
           <span className={validFirstname ? "valid" : "hide"}>
@@ -319,24 +329,11 @@ function SignupForm({ onFormSwitch }) {
           Créer mon compte
         </button>
       </form>
-
-      <button
-        className="linkBtn"
-        type="button"
-        onClick={() => onFormSwitch("loginForm")}
-      >
+      <NavLink className="link" to="/login">
         Vous avez déjà un compte ? Me connecter
-      </button>
+      </NavLink>
     </article>
   );
 }
-
-SignupForm.propTypes = {
-  onFormSwitch: PropTypes.func,
-};
-
-SignupForm.defaultProps = {
-  onFormSwitch: ["loginForm"],
-};
 
 export default SignupForm;

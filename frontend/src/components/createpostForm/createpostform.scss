@@ -8,6 +8,14 @@
   padding: 20px;
   width: 100%;
   border-radius: 10px;
+  .createPostHeader {
+    display: flex;
+    align-items: center;
+    svg {
+      height: 25px;
+      width: 25px;
+    }
+  }
   h2 {
     font-size: 16px;
     padding-left: 10px;
@@ -15,11 +23,21 @@
   .formItems {
     margin: 0;
     input {
-      margin: 10px 0 0 0;
+      margin: 5px 0 0 0;
       padding: 5px 15px;
     }
     #fileInput {
       display:none;
+    }
+    .previewImgContainer {
+      position: relative;
+      margin: 15px 0 0 20px;
+      max-height: 100px;
+      max-width: 200px;
+    }
+    .previewImg {
+      max-height: 100px;
+      max-width: 200px;
     }
     .btnsContainer {
       display: flex;
@@ -27,14 +45,25 @@
       margin: 0 10px 0 10px;
       button {
         width: fit-content;
+        height: fit-content;
         min-width: 120px;
         font-size: 13px;
         border-radius: 10px;
         margin: 15px 0 0 0;
         padding: 7px 10px;
       }
-      #addImgBtn {
+      #imgBtn {
         background-color: $border-color;
+      }
+      #hide {
+        display: none;
+      }
+      .deleteImgUrl{
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 255, 255,0.5);
+        cursor: pointer;
       }
       .addImgDisabled {
         cursor: default;

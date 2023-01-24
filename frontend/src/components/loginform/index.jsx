@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import { useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import "../signupform/forms.scss";
 import axios from "../../api/axios";
 
-function LoginForm({ onFormSwitch }) {
+function LoginForm() {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +42,8 @@ function LoginForm({ onFormSwitch }) {
       );
       const token = response?.data?.token;
       const userId = response?.data?.userId;
-      setAuth({ email, token, userId });
+      const isAdmin = response?.data?.isAdmin;
+      setAuth({ token, userId, isAdmin });
       // clear input fields (need value attributes in inputs for this)
       setEmail("");
       setPassword("");
@@ -113,24 +113,11 @@ function LoginForm({ onFormSwitch }) {
           Me connecter
         </button>
       </form>
-
-      <button
-        className="linkBtn"
-        type="button"
-        onClick={() => onFormSwitch("signupForm")}
-      >
+      <NavLink className="link" to="/signup">
         Pas encore de compte ? M'inscrire
-      </button>
+      </NavLink>
     </article>
   );
 }
-
-LoginForm.propTypes = {
-  onFormSwitch: PropTypes.func,
-};
-
-LoginForm.defaultProps = {
-  onFormSwitch: ["loginForm"],
-};
 
 export default LoginForm;
