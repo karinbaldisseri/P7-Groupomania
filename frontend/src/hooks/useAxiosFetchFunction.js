@@ -24,29 +24,15 @@ const useAxiosFetchFunction = () => {
         ...requestConfig,
         signal: ctrl.signal,
       });
-      // console.log("RES", res);
-      // console.log("RES.DATA", res.data);
       setResponse(res.data);
       setFetchError("");
+      return res;
     } catch (err) {
       if (!err?.response || err.response.status === 500) {
         setFetchError("Erreur interne du serveur");
-      } else if (err.response.status === 400) {
-        setFetchError("Erreur de saisie, vérifiez tous les champs requis");
-      } else if (err.response.status === 401) {
-        setFetchError("Erreur de saisie et/ou accès non autorisé");
-      } else if (err.response.status === 403) {
-        setFetchError(
-          "Compte désactivé, merci de contacter votre administrateur"
-        );
-      } else if (err.response.status === 404) {
-        // navigate("/error");
-        setFetchError("Erreur 404 - Les données n'ont pas été trouvées"); // and redirect in component ??
-      } else {
-        setFetchError(
-          "Erreur de chargement et/ou d'envoi des données, veuillez réessayer !"
-        );
       }
+      setFetchError(err.response.statusText);
+      return err;
     } finally {
       setLoading(false);
     }

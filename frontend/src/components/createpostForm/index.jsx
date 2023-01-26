@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import { FaTimes, FaUserCircle } from "react-icons/fa";
+import TextareaAutosize from "react-textarea-autosize";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
 import { getOneUser } from "../../api/calls/usercalls";
 import { createPost } from "../../api/calls/postcalls";
@@ -24,6 +25,9 @@ function CreatePostForm({ onCreate }) {
 
   useEffect(() => {
     getOneUser(userAxiosFetch);
+    if (userErr) {
+      setErrMsg(userErr);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -51,8 +55,6 @@ function CreatePostForm({ onCreate }) {
     createPost(axiosFetch, postData);
     if (fetchError) {
       setErrMsg(fetchError);
-    } else if (loading) {
-      toast.info("Chargement en cours...");
     } else if (response) {
       toast.success("Nouveau post crée !");
     }
@@ -62,6 +64,7 @@ function CreatePostForm({ onCreate }) {
 
   return (
     <article className="formContainer createPostForm">
+      {userLoad || (loading && <p>Chargement en cours...</p>)}
       <div className="createPostHeader">
         <FaUserCircle fill="lightgrey" className="userIcon" />
         {!userLoad && !userErr && userRes?.firstname && (
@@ -81,17 +84,19 @@ function CreatePostForm({ onCreate }) {
         >
           {errMsg}
         </p>
-        <input
-          type="text"
+
+        <TextareaAutosize
           autoComplete="off"
+          // className="content"
           value={postText}
-          onChange={(e) => setPostText(e.target.value)}
-          required
           placeholder="Quoi de neuf aujourd'hui ?"
+          required
+          onChange={(e) => setPostText(e.target.value)}
         />
+
         <input
           type="file"
-          id="fileInput"
+          className="hide"
           name="imageUrl"
           onChange={(e) => {
             setImageUrl(e.target.files[0]);
@@ -101,12 +106,13 @@ function CreatePostForm({ onCreate }) {
           accept="image/jpg, image/jpeg, image/png"
           ref={fileInput}
         />
+
         <div className="btnsContainer">
           <button
             type="button"
             id={imageUrl ? "hide" : "imgBtn"}
+            className={!postText ? "disabled" : "notDisabled"}
             disabled={!postText}
-            className={!postText ? "addImgDisabled" : "notDisabled"}
             onClick={() => fileInput.current.click()}
           >
             Ajouter une image

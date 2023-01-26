@@ -6,7 +6,6 @@ import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import PropTypes from "prop-types";
 import TextareaAutosize from "react-textarea-autosize";
-import { toast } from "react-toastify";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
 import useAuth from "../../hooks/useAuth";
 import { updateComment, deleteComment } from "../../api/calls/commentcalls";
@@ -47,7 +46,6 @@ function Comment({ comment, onDelete, onUpdate }) {
       // if updateCommLoad => toast.load
      // if (updateCommRes) {
         onUpdate(comment.id, content);
-        toast.success("Le commentaire a été modifié !");
       /* } else */ if (updateCommErr && !updateCommRes) {
         setErrMsg(updateCommErr);
       }
@@ -61,7 +59,6 @@ function Comment({ comment, onDelete, onUpdate }) {
       deleteComment(deleteCommAxiosFetch, comment.postId, comment.id);
       // if (deleteCommRes) {
         onDelete(comment.id);
-        toast.success("Le commentaire a été supprimé !");
       /* } else */ if (deleteCommErr && !deleteCommRes) {
         setErrMsg(deleteCommErr);
       }
@@ -88,7 +85,7 @@ function Comment({ comment, onDelete, onUpdate }) {
 
   return (
     <>
-      {updateCommLoad || (deleteCommLoad && <p>Loading...</p>)}
+      {updateCommLoad || (deleteCommLoad && <p>Chargement en cours ...</p>)}
       <p
         ref={errRef}
         className={errMsg ? "errMsg" : "offscreen"}
@@ -111,7 +108,7 @@ function Comment({ comment, onDelete, onUpdate }) {
               className={
                 auth.userId === comment.userId || auth.isAdmin
                   ? "menuIcons"
-                  : "notAuthorized"
+                  : "hide"
               }
             >
               <button
@@ -155,7 +152,7 @@ function Comment({ comment, onDelete, onUpdate }) {
           <>
             <TextareaAutosize
               ref={focusRef}
-              className="content"
+              // className="content"
               autoComplete="off"
               value={content}
               onChange={(e) => setContent(e.target.value)}

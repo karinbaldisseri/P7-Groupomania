@@ -31,20 +31,26 @@ function Post({ post, onDelete, onUpdate }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post.content, post.imageUrl]);
 
-  const handleDelete = () => {
-    if (post.userId === auth.userId || auth.isAdmin) {
-      deletePost(axiosFetch, post.id);
-      // if (response) {
+  useEffect(() => {
+    let ignore = false;
+    if (response && !ignore) {
       toast.success("Post supprimé !");
       onDelete(post.id);
       setOpen(!open);
-      /* } else */ if (fetchError && !response) {
-        setErrMsg(fetchError);
-        errRef.current.focus();
-      } else if (loading) {
-        toast.loading("Chargement en cours");
-      }
-      setErrMsg("");
+    } else if (fetchError && !ignore) {
+      setErrMsg(fetchError);
+      errRef.current.focus();
+    }
+    setErrMsg("");
+    return () => {
+      ignore = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response, fetchError]);
+
+  const handleDelete = () => {
+    if (post.userId === auth.userId || auth.isAdmin) {
+      deletePost(axiosFetch, post.id);
     }
   };
 
@@ -74,6 +80,8 @@ function Post({ post, onDelete, onUpdate }) {
       >
         {errMsg}
       </p>
+      {loading && <p className="loading">Chargement en cours...</p>}
+
       <div className={!post.imageUrl ? "borderBottom" : undefined}>
         <div className="postHeader">
           <div className="userInfoContainer">
@@ -86,9 +94,7 @@ function Post({ post, onDelete, onUpdate }) {
           <FaEllipsisH
             fill="grey"
             className={
-              auth.userId === post.userId || auth.isAdmin
-                ? "dotsIcon"
-                : "notAuthorized"
+              auth.userId === post.userId || auth.isAdmin ? "dotsIcon" : "hide"
             }
             title="Actions : cliquez pour montrer ou cacher "
             onClick={() => setOpen(!open)}
@@ -131,11 +137,15 @@ function Post({ post, onDelete, onUpdate }) {
         {!trigger && post.imageUrl && (
           <>
             <p className="content">{post.content}</p>
-            <img src={post.imageUrl} alt="relative à ce post" />
+            <img
+              className="postImg"
+              src={post.imageUrl}
+              alt="relative à ce post"
+            />
           </>
         )}
       </div>
-      <Likes postId={post.id} />
+      {!trigger && <Likes postId={post.id} />}
     </article>
   );
 }

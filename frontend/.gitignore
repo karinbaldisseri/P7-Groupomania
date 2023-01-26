@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+
+# Files
+signupwithoutinputfields
+unusedhook
+useAxiosFetch.js
+signupformwithoutinput

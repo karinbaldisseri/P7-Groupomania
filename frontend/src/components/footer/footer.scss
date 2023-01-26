@@ -4,6 +4,11 @@ footer {
   height: 75px;
   text-align: center;
   margin-top: 10px;
+  @include flex-center;
+  @include mobiles {
+    display: flex;
+    flex-direction: column;
+  }
   p {
     color: $secondary-color;
     font-size: 24px;
@@ -11,4 +16,8 @@ footer {
       font-size: 14px;
     }
   }
+  .second {
+    margin-left: 10px;
+  }
+  
 }

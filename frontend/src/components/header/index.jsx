@@ -14,7 +14,7 @@ export default function Header() {
 
   return (
     <header>
-      <NavLink /* to="/" */ onClick={handleLogout}>
+      <NavLink onClick={handleLogout}>
         <img
           src={RedLogo}
           alt="Logo de Groupomania"

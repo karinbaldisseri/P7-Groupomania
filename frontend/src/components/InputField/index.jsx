@@ -10,66 +10,64 @@ function InputField({
   placeholder,
   regExp,
   inputDescription,
-  setFormInputs,
-  setValidFormInputs,
+  inputs,
+  setInputs,
+  validInputs,
+  setValidInputs,
 }) {
-  // to put focus on input when page loads
-  // const focusRef = useRef();
-
-  // ??? Comment vider à l'envoi du formulaire dans composant parent?
-  const [inputValue, setInputvalue] = useState("");
-  const [validInput, setValidInput] = useState(false);
+  const focusRef = useRef();
   const [inputFocus, setInputFocus] = useState(false);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (name === "firstname") {
       focusRef.current.focus();
     }
-  }, [name]); */
+  }, [name]);
 
   const handleChange = (e) => {
-    setInputvalue(e.target.value);
-    setFormInputs((prevFormInputs) => ({
-      ...prevFormInputs,
+    setInputs((prevInputs) => ({
+      ...prevInputs,
       [e.target.name]: e.target.value,
     }));
-    setValidInput(regExp.test(e.target.value));
-    setValidFormInputs((prevValidFormInputs) => ({
-      ...prevValidFormInputs,
+    setValidInputs((prevValidInputs) => ({
+      ...prevValidInputs,
       [e.target.name]: regExp.test(e.target.value),
     }));
   };
 
   return (
     <>
-      <label htmlFor={name}>
-        {label}
-        <span className={validInput ? "valid" : "hide"}>
-          <FaCheck />
-        </span>
-        <span className={validInput || !inputValue ? "hide" : "invalid"}>
-          <FaTimes />
-        </span>
+      <div className="labelAndInputContainer">
+        <label htmlFor={name}>
+          {label}
+          <span className={validInputs[name] ? "valid" : "hide"}>
+            <FaCheck />
+          </span>
+          <span
+            className={validInputs[name] || !inputs[name] ? "hide" : "invalid"}
+          >
+            <FaTimes />
+          </span>
+        </label>
         <input
           type={type}
           name={name}
           id={name} // has to match the htmlfor in label
-          // ref={focusRef} // to set focus on the input (with useRef we created and condition if input = firstname)
+          ref={focusRef} // to set focus on the input (with useRef we created and condition if input = firstname)
           autoComplete="off" // don't want autocomplete on a registration / signup form
-          value={inputValue} // makes it a controlled input -> necessary to empty out in handleSubmit (setFirstname(""))
+          value={inputs[name]} // makes it a controlled input -> necessary to empty out in handleSubmit (setFirstname(""))
           onChange={handleChange} // ties the input to the state
           placeholder={placeholder}
-          // required
-          aria-invalid={validInput ? "false" : "true"} // accessibility , lets a screenreader announce if the input needs to be adjusted => if validInput is false and there is an error to fix
+          aria-invalid={validInputs[name] ? "false" : "true"} // accessibility , lets a screenreader announce if the input needs to be adjusted => if validInput is false and there is an error to fix
           aria-describedby={`${name}idnote`} // lets us provide another element that describes the input field, so a screenreader will read the requirements our form needs
           onFocus={() => setInputFocus(true)} // simply setting if the field has focus & set it to true
           onBlur={() => setInputFocus(false)} // when you leave input field -> set the focus to false
         />
-      </label>
+      </div>
       <p
         id={`${name}idnote`}
         className={
-          inputFocus && inputValue && !validInput // focus is on input & input is not empty NOR valid
+          inputFocus && inputs[name] && !validInputs[name] // focus is on input & input is not empty NOR valid
             ? "instructions" // then show instructions with css styling
             : "offscreen" // or dont show it with css styling
         }
@@ -84,19 +82,20 @@ InputField.propTypes = {
   type: PropTypes.string.isRequired,
   name: PropTypes.oneOf(["firstname", "lastname", "email", "password"])
     .isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   placeholder: PropTypes.string.isRequired,
   regExp: PropTypes.any,
   inputDescription: PropTypes.string,
-  setFormInputs: PropTypes.any,
-  setValidFormInputs: PropTypes.any,
+  inputs: PropTypes.objectOf(PropTypes.string).isRequired,
+  validInputs: PropTypes.objectOf(PropTypes.bool).isRequired,
+  setInputs: PropTypes.any.isRequired,
+  setValidInputs: PropTypes.any.isRequired,
 };
 
 InputField.defaultProps = {
+  label: "",
   regExp: null,
   inputDescription: null,
-  setFormInputs: {},
-  setValidFormInputs: {},
 };
 
 export default InputField;

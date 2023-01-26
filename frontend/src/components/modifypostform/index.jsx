@@ -26,13 +26,23 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
   }, []);
 
   useEffect(() => {
-    // if (response.length > 0 || Object.keys(response).length !== 0) {
-    if (response) {
+    let ignore = false;
+    if (response && !ignore) {
       onUpdate(response, postId);
       onClose();
+      toast.success("Le post a été modifié !");
+      setContent("");
+      setImageUrl("");
+      setDeleteImage(false);
+    } else if (fetchError && !ignore) {
+      setErrMsg(fetchError);
     }
+    setErrMsg("");
+    return () => {
+      ignore = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]);
+  }, [response, fetchError]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,19 +59,6 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
       }
       updatePost(axiosFetch, postId, data);
     }
-    // if (response) {
-    toast.success("Le post a été modifié !");
-    // cleanup
-    setContent("");
-    setImageUrl("");
-    setErrMsg("");
-    setDeleteImage(false);
-    /* } else  */ if (loading) {
-      toast.loading("Chargement en cours...");
-    } else if (fetchError) {
-      setErrMsg(fetchError);
-    }
-    setErrMsg("");
   };
 
   return (
@@ -78,6 +75,8 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
         >
           {errMsg}
         </p>
+        {loading && <p>Chargement en cours...</p>}
+
         <TextareaAutosize
           ref={focusRef}
           autoComplete="off"
@@ -88,7 +87,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
         />
         {imageUrl && !updatedImage && (
           <div>
-            <img src={imageUrl} alt="relative à ce post" />
+            <img className="postImg" src={imageUrl} alt="relative à ce post" />
             <div className="btnsContainer">
               <button
                 type="button"
@@ -107,7 +106,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 className={!content ? "disabled" : "notDisabled"}
                 disabled={!content}
               >
-                Enregistrer les modifications
+                Enregistrer
               </button>
             </div>
           </div>
@@ -116,7 +115,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
           <div className="btnsContainer">
             <input
               type="file"
-              id="fileInput"
+              className="hide"
               name="imageUrl"
               accept="image/jpg, image/jpeg, image/png"
               ref={fileInput}
@@ -145,7 +144,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
               className={!content ? "disabled" : "notDisabled"}
               disabled={!content}
             >
-              Enregistrer les modifications
+              Enregistrer
             </button>
           </div>
         )}
@@ -176,17 +175,15 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 className={!content ? "disabled" : "notDisabled"}
                 disabled={!content}
               >
-                Enregistrer les modifications
+                Enregistrer
               </button>
             </div>
           </>
         )}
-        <div className="undoContainer">
+        <p className="undoChanges">
           <FaInfoCircle className="infoIcon" />
-          <p className="undoChanges">
-            Cliquez à nouveau sur "Modifier" pour annuler les modifications !
-          </p>
-        </div>
+          Cliquez à nouveau sur "Modifier" pour annuler les modifications !
+        </p>
       </form>
     </article>
   );

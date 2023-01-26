@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import PropTypes from "prop-types";
-// import { toast } from "react-toastify";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
 import "./likes.scss";
 import CommentsFeed from "../commentsFeed";
@@ -17,11 +16,11 @@ function Likes({ postId }) {
   const [commentsCount, setCommentsCount] = useState(0);
   const [likesCount, setLikesCount] = useState(0);
   const [dislikesCount, setDislikesCount] = useState(0);
+  const [errMsg, setErrMsg] = useState("");
+  const errRef = useRef();
 
   const [likeCountRes, likeCountErr, likeCountLoad, likeCountAxiosFetch] = useAxiosFetchFunction();
-  // const { likesTotal, dislikesTotal } = likeCountRes;
   const [commCountRes, commCountErr, commCountLoad, commCountAxiosFetch] = useAxiosFetchFunction();
-  // const { commentsTotal } = commCountRes;
   const [likeRes, likeErr, likeLoad, likeAxiosFetch] = useAxiosFetchFunction();
   const [voteRes, voteErr, voteLoad, voteAxiosFetch] = useAxiosFetchFunction();
 
@@ -43,6 +42,14 @@ function Likes({ postId }) {
       setDislikesCount(likeCountRes.dislikesTotal);
     }
   }, [likeCountRes]);
+
+  useEffect(() => {
+    let ignore = false;
+    if (likeCountErr || commCountErr || likeErr || voteErr && !ignore) {
+      setErrMsg("Erreur de chargement !")
+    } 
+    return () => { ignore = true };
+  }, [likeCountErr, commCountErr, likeErr, voteErr]);
 
   useEffect(() => {
     if (likeRes) {
@@ -109,8 +116,6 @@ function Likes({ postId }) {
             <p>{dislikesCount}</p>
           </button>
         </div>
-        {likeCountLoad || likeCountErr || likeLoad || likeErr || voteLoad ||
-          voteErr && <p>Likes indisponibles</p>}
         <button
           type="button"
           className="commentBtn"
@@ -120,6 +125,14 @@ function Likes({ postId }) {
           {!commCountLoad && !commCountErr && commentsCount} commentaires
         </button>
       </div>
+      {likeCountLoad || likeLoad || (voteLoad && !voteRes) && <p className="loading">Chargement en cours</p>}
+       <p
+          ref={errRef}
+          className={!errMsg ? "errMsg" : "offscreen"}
+          aria-live="assertive"
+        >
+          {errMsg} Erreur de chargement
+        </p>
       {commentsOpen && (
         <CommentsFeed postId={postId} setCommentsCount={setCommentsCount} />
       )}

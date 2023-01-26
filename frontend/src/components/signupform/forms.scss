@@ -1,7 +1,22 @@
 @use "../../stylesUtils/" as *;
 
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+.errMsg {
+  background-color: $secondary-color;
+  color: $primary-color;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 5px;
+}
+.hide {
+  display: none;
+}
 .formContainer {
-  margin: 10px 0;
+  margin: 20px 0;
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -15,35 +30,25 @@
   p {
     font-size: 12px;
     margin-bottom: 10px;
-  }
-  .offscreen {
-    position: absolute;
-    left: -9999px;
-  }
-  .errMsg {
-    background-color: $secondary-color;
-    color: $primary-color;
-    font-weight: bold;
-    text-align: center;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+    @include tablets {
+      font-size: 11px;
+    }
   }
   .formItems {
-    margin-top: 20px ;
+    margin-top: 15px ;
     width: 100%;
     display: flex;
     flex-direction: column;
     button{
       width: 100%;
       background-color: $primary-color;
-      color: white;
+      color: $white-color;
       font-weight: 600;
       font-size: 16px;
       border: none;
       border-radius: 5px;
-      padding: 10px;
-      margin: 15px 0;
+      padding: 8px 10px;
+      margin: 10px 0 15px 0;
       cursor: pointer;
     }
     .notDisabled:hover {
@@ -55,19 +60,36 @@
         opacity: 0.6;
       }
     }
+    .labelAndInputContainer {
+      display: flex;
+      align-items: center;
+      @include tablets {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      @include mobiles {
+        margin-bottom: 8px;;
+      }
+    }
     label {
      text-align: left;
      font-size: 12px;
-     display:flex;
-     align-items: center;
     }
     input, textarea {
-      flex: 2;
+      flex: 3;
       padding: 8px 10px;
-      margin: 5px 0 10px 10px;
+      margin: 5px 0 5px 10px;
       border: 2px solid rgb(233, 233, 233);
       border-radius: 10px;
       background-color: $background-primary;
+      @include tablets {
+        margin-left: 0;
+        width: 100%;
+        padding: 7px 10px;
+      }
+      @include mobiles {
+        
+      }
       &:focus {
         outline: 3px solid $secondary-color;
         border: none;
@@ -75,13 +97,11 @@
     }
     .instructions{
       color: $primary-color;
+      margin: 5px 0;
       svg {
           margin-right: 10px;
           fill: $primary-color;
         }
-    }
-    .hide {
-      display: none;
     }
     .valid {
       margin-left: 10px;
@@ -104,5 +124,8 @@
   .link {
     font-size: 12px;
     text-decoration: underline;
+    @include tablets {
+      text-align: center;
+    }
   }
 }

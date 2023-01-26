@@ -1,8 +1,12 @@
+/* eslint-disable prettier/prettier */
 import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
+import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
+import { loginUser } from "../../api/calls/usercalls";
 import useAuth from "../../hooks/useAuth";
 import "../signupform/forms.scss";
-import axios from "../../api/axios";
+import "./loginform.scss";
 
 function LoginForm() {
   const { setAuth } = useAuth();
@@ -11,10 +15,16 @@ function LoginForm() {
   const from = location.state?.from?.pathname || "/postswall"; // get where the user came from
   const focusRef = useRef();
   const errRef = useRef();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  // eslint-disable-next-line no-unused-vars
+  const [emailFocus, setEmailFocus] = useState("");
+  // eslint-disable-next-line no-unused-vars
+  const [pwdFocus, setPwdFocus] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+
+  const [response, fetchError, loading, axiosFetch] = useAxiosFetchFunction();
 
   useEffect(() => {
     focusRef.current.focus();
@@ -24,7 +34,35 @@ function LoginForm() {
     setErrMsg("");
   }, [email, password]);
 
+  useEffect(() => {
+    let ignore = false;
+    if (response && !ignore) {
+      setEmail("");
+      setPassword("");
+      setAuth({ token: response?.token, userId: response?.userId, isAdmin: response?.isAdmin });
+      navigate(from, { replace: true });
+    } else if (fetchError && !ignore) {
+      setErrMsg(fetchError);
+      errRef.current.focus();
+    }
+    return () => { ignore = true };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response, fetchError]);
+
   const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setErrMsg(
+        "Saisie incorrecte, veuillez vérifier l'email et le mot de passe saisi."
+      );
+      return;
+    }
+    loginUser(axiosFetch, email, password);
+    /* setAuth({ token: response?.token, userId: response?.userId, isAdmin: response?.isAdmin });
+    navigate(from, { replace: true }); */
+  };
+
+  /* const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       setErrMsg(
@@ -62,12 +100,12 @@ function LoginForm() {
       }
       errRef.current.focus();
     }
-  };
+  }; */
 
   return (
     <article className="formContainer">
       <h1>Connexion</h1>
-      <form className="formItems" onSubmit={handleSubmit}>
+      <form className="formItems loginForm" onSubmit={handleSubmit}>
         <p
           ref={errRef}
           className={errMsg ? "errMsg" : "offscreen"}
@@ -75,6 +113,8 @@ function LoginForm() {
         >
           {errMsg}
         </p>
+        {loading && <p>Chargement en cours ...</p>}
+
         <label htmlFor="email">
           Email :
           <input
@@ -85,23 +125,29 @@ function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Votre email professionnel"
             required
-            // onFocus={() => setEmailFocus(true)}
-            // onBlur={() => setEmailFocus(false)}
+            onFocus={() => setEmailFocus(true)}
+            onBlur={() => setEmailFocus(false)}
           />
         </label>
 
         <label htmlFor="password">
           Mot de passe :
+          <div className="pwdContainer">
           <input
-            type="password"
+            type={showPwd ? "text" : "password"}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Saisissez votre mot de passe"
+            placeholder="Votre mot de passe"
             required
-            // onFocus={() => setPasswordFocus(true)}
-            // onBlur={() => setPasswordFocus(false)}
-          />
+            onFocus={() => setPwdFocus(true)}
+            onBlur={() => setPwdFocus(false)}
+            />
+            <button type="button" className="showPwd" onClick={() => setShowPwd(!showPwd)}>
+              {!showPwd ? <FaEye /> : <FaEyeSlash />}
+            </button>
+          </div>
+
         </label>
 
         <p className="required">* Tous les champs sont requis</p>

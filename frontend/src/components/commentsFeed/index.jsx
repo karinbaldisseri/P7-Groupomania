@@ -11,16 +11,18 @@ import { getCommentsByPost, createComment } from "../../api/calls/commentcalls";
 
 function CommentsFeed({ postId, setCommentsCount }) {
   const [commentText, setCommentText] = useState("");
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState(undefined); 
   const [page, setPage] = useState(1);
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
+  const focusRef = useRef();
   const effectRan = useRef(false);
 
   const [commentsResponse, commentsError, commentsLoading, commentsAxiosFetch] = useAxiosFetchFunction();
   const [createCommRes, createCommErr, createCommLoad, createCommAxiosFetch] = useAxiosFetchFunction();
 
   useEffect(() => {
+    focusRef.current.focus();
     if (effectRan.current === true) {
       getCommentsByPost(commentsAxiosFetch, postId, page);
       if (commentsError) {
@@ -35,15 +37,20 @@ function CommentsFeed({ postId, setCommentsCount }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (/* effectRan.current === true && */ commentsResponse) {
-      setComments((prev) => [...prev, ...commentsResponse.items])
-      // setComments(commentsResponse.items);
-      setPage(commentsResponse.nextPage)
+    if (effectRan.current === true && commentsResponse !== null && !commentsResponse.message) {
+      if (!comments) {
+        setComments(commentsResponse.items);
+      } else {
+        setComments((prev) => [...prev, ...commentsResponse.items])
+      }
+      setPage(commentsResponse.nextPage);
     }
-    /* return () => {
+    return () => {
       effectRan.current = true;
-    }; */
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentsResponse]);
 
   useEffect(() => {
@@ -64,7 +71,6 @@ function CommentsFeed({ postId, setCommentsCount }) {
       setErrMsg("Merci d'inclure du texte dans votre commentaire");
     }
     createComment(createCommAxiosFetch, postId, commentText);
-    // if (createCommLoad} { tost.load("loading")}
     setCommentsCount((prev) => prev + 1);
     toast.success("Nouveau commentaire crée !");
     setCommentText("");
@@ -81,6 +87,7 @@ function CommentsFeed({ postId, setCommentsCount }) {
       setCommentsCount((prev) => prev - 1);
       setComments(comments.filter((comm) => comm.id !== commentId));
     }
+    toast.success("Commentaire supprimé !");
   };
 
   const handleUpdate = (commentId, content) => {
@@ -92,11 +99,11 @@ function CommentsFeed({ postId, setCommentsCount }) {
         return comment;
       })
     );
+    toast.success("Commentaire modifié");
   };
 
   const handleCharge = () => {
     getCommentsByPost(commentsAxiosFetch, postId, page);
-    // setComments((prev) => [...prev, ...commentsResponse.items]);
   }
 
   return (
@@ -112,6 +119,7 @@ function CommentsFeed({ postId, setCommentsCount }) {
         <form className="formItems commentForm" onSubmit={handleSubmit}>
           <FaUserCircle className="userIcon" />
           <TextareaAutosize
+            ref={focusRef}
             autoComplete="off"
             className="content"
             value={commentText}
@@ -124,7 +132,8 @@ function CommentsFeed({ postId, setCommentsCount }) {
           </button>
         </form>
       </div>
-      {(commentsLoading || createCommLoad) && <p>Loading ...</p>}
+      {(commentsLoading || createCommLoad) && <p className="loading">Chargement en cours ...</p>}
+      
       {!commentsLoading && !createCommLoad && !commentsError && !createCommErr && comments?.length && (
           <div
             className=" formContainer commentsContainer"
@@ -134,7 +143,6 @@ function CommentsFeed({ postId, setCommentsCount }) {
               <Comment comment={comment} key={comment.id} onDelete={handleDelete} onUpdate={handleUpdate} />
             ))}
           {page > 1 && <button className="linkBtn" type="button" onClick={handleCharge}>Afficher plus de commentaires</button>}
-          
           </div>
         )}
     </>
@@ -146,9 +154,5 @@ CommentsFeed.propTypes = {
   postId: PropTypes.number.isRequired,
   setCommentsCount: PropTypes.func.isRequired,
 };
-
-/* CommentsFeed.defaultProps = {
-  commentsTotal: 0,
-}; */
 
 export default CommentsFeed;

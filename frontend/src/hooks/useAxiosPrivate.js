@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { axiosPrivate } from "../api/axios";
@@ -5,14 +6,12 @@ import useAuth from "./useAuth";
 
 const useAxiosPrivate = () => {
   const { auth } = useAuth();
-  const authToken = auth.token;
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(
       (config) => {
-        if (authToken) {
-          // eslint-disable-next-line no-param-reassign
-          config.headers.Authorization = `Bearer ${authToken}`;
+        if (auth.token) {
+          config.headers.Authorization = `Bearer ${auth.token}`;
         }
         return config;
       },
@@ -23,19 +22,23 @@ const useAxiosPrivate = () => {
       (response) => response,
       (error) => {
         const { status /* , data, config */ } = error.response;
+        //  == error?.response?.status === 400
         if (status === 500 || !error?.response) {
+          // possible d'envoyer un toast depuis intercepteur
           toast.error("Erreur interne du serveur");
         } else if (status === 400) {
-          //  == error?.response?.status === 400
-          toast.error("Erreur de saisie, vérifiez tous les champs requis");
+          error.response.statusText =
+            "Erreur de saisie, vérifiez tous les champs requis";
         } else if (status === 401) {
-          toast.error("Erreur de saisie et/ou accès non autorisé");
+          error.response.statusText =
+            "Erreur de saisie et/ou accès non autorisé";
         } else if (status === 403) {
-          toast.error(
-            "Compte désactivé, merci de contacter votre administrateur"
-          );
+          error.response.statusText =
+            "Compte désactivé, merci de contacter votre administrateur";
         } else if (status === 404) {
-          toast.error("Erreur 404 - Not found");
+          error.response.statusText = "Erreur, données non disponibles";
+        } else {
+          error.response.statusText = "Erreur... Veuillez réessayer svp !";
         }
         /* else (
           status === 400 &&
@@ -53,7 +56,7 @@ const useAxiosPrivate = () => {
       axiosPrivate.interceptors.request.eject(requestIntercept);
       axiosPrivate.interceptors.response.eject(responseIntercept);
     };
-  }, [authToken]);
+  }, [auth.token]);
 
   return axiosPrivate;
 };

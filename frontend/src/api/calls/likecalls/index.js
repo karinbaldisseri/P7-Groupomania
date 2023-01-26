@@ -1,19 +1,19 @@
-const getLikeCount = (axiosFetch, postId) => {
-  axiosFetch({
+const getLikeCount = async (axiosFetch, postId) => {
+  await axiosFetch({
     url: `api/posts/${postId}/likecount`,
     method: "GET",
   });
 };
 
-const getLikeByPostByUser = (axiosFetch, postId) => {
-  axiosFetch({
+const getLikeByPostByUser = async (axiosFetch, postId) => {
+  await axiosFetch({
     url: `api/posts/${postId}/like`,
     method: "GET",
   });
 };
 
-const addOrRemoveLike = (axiosFetch, postId, vote) => {
-  axiosFetch({
+const addOrRemoveLike = async (axiosFetch, postId, vote) => {
+  await axiosFetch({
     url: `api/posts/${postId}/like`,
     method: "POST",
     requestConfig: {

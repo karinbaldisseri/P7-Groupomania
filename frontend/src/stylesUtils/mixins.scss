@@ -1,5 +1,17 @@
 @use "../stylesUtils/variables.scss" as *;
 
+// General
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin shadow {
+  box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.20);
+}
+
 // media queries
 
 @mixin tablets {

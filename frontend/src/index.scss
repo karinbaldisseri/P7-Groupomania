@@ -5,15 +5,29 @@
   padding: 0;
   margin: 0;
   color: inherit;
-  color: $tertiary-color;
   font-family: $primary-font;
   font-weight: 500;
   transition: 250ms ease-in-out;
+  .Toastify__toast-theme--colored.Toastify__toast--success {
+    background-color: $secondary-color;
+    color: $tertiary-color;
+    .Toastify__close-button {
+      color: $tertiary-color;
+    }
+    .Toastify__progress-bar-theme--colored.Toastify__progress-bar--success {
+      background-color: rgb(167, 155, 155);
+    }
+  }
+  .Toastify__toast-theme--colored.Toastify__toast--error {
+    background-color: $primary-color;
+    color: white;
+  }
   body {
     background: linear-gradient(to bottom, $primary-color,$tertiary-color 80%);
     height: 100vh;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    color: $tertiary-color;
   }
   #root {
     min-height: 100vh;

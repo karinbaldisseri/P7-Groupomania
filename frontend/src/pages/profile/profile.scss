@@ -2,7 +2,7 @@
 
 .profilePage {
   .profileContainer {
-      background: white;
+      background: $white-color;
       max-width: 600px;
       text-align: center;
       margin: 100px auto 50px auto;
@@ -20,7 +20,6 @@
         width: 100%;
         button {
           margin: 15px auto 0 auto;
-          padding: 8px 10px;
           width: fit-content;
         }
         h2 {
@@ -30,15 +29,11 @@
         }
         form {
           margin-top: 15px;
-          input {
-            padding: 6px 10px;
-          }
         }
         .deleteBtn {
           width: 90%;
           background-color: $secondary-color;
           color: $primary-color;
-          padding: 6px 10px;
           font-size: 14px;
         }
         .deactivateBtn {

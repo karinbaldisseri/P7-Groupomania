@@ -13,14 +13,13 @@ function PostsFeed() {
 
   const [response, fetchError, loading, axiosFetch] = useAxiosFetchFunction();
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     // if (effectRan.current === false) {
     if (effectRan.current === true) {
       getAllPosts(axiosFetch, page);
-      /* return () => {
-        effectRan.current = true;
-      }; */
+      // return () => {
+      // effectRan.current = true;
+      // };
     }
     return () => {
       effectRan.current = true;
@@ -93,6 +92,7 @@ function PostsFeed() {
     <>
       <CreatePostForm onCreate={handleCreate} />
       <section className="postsFeedContainer">
+        {loading && <p>Chargement en cours...</p>}
         {!loading && fetchError && (
           <p
             ref={errRef}
@@ -115,7 +115,7 @@ function PostsFeed() {
             ))}
           </>
         )}
-        {loading && <h1>Loading...</h1>}
+
         <button className="linkBtn" type="button" onClick={handleClick}>
           Haut de page
         </button>

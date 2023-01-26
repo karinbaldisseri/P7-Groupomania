@@ -1,19 +1,19 @@
-const getCommentsCount = (axiosFetch, postId) => {
-  axiosFetch({
+const getCommentsCount = async (axiosFetch, postId) => {
+  await axiosFetch({
     url: `/api/post/${postId}/commentsCount`,
     method: "GET",
   });
 };
 
-const getCommentsByPost = (axiosFetch, postId, page) => {
-  axiosFetch({
+const getCommentsByPost = async (axiosFetch, postId, page) => {
+  await axiosFetch({
     url: `/api/post/${postId}/comments?page=${page}`,
     method: "GET",
   });
 };
 
-const createComment = (axiosFetch, postId, commentData) => {
-  axiosFetch({
+const createComment = async (axiosFetch, postId, commentData) => {
+  await axiosFetch({
     url: `/api/post/${postId}/comments`,
     method: "POST",
     requestConfig: {
@@ -22,8 +22,8 @@ const createComment = (axiosFetch, postId, commentData) => {
   });
 };
 
-const updateComment = (axiosFetch, postId, commentId, commentData) => {
-  axiosFetch({
+const updateComment = async (axiosFetch, postId, commentId, commentData) => {
+  await axiosFetch({
     url: `/api/post/${postId}/comments/${commentId}`,
     method: "PUT",
     requestConfig: {
@@ -32,8 +32,8 @@ const updateComment = (axiosFetch, postId, commentId, commentData) => {
   });
 };
 
-const deleteComment = (axiosFetch, postId, commentId) => {
-  axiosFetch({
+const deleteComment = async (axiosFetch, postId, commentId) => {
+  await axiosFetch({
     url: `/api/post/${postId}/comments/${commentId}`,
     method: "DELETE",
   });

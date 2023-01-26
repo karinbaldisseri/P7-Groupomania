@@ -9,7 +9,6 @@ export default function ToastConfig() {
       pauseOnFocusLoss={false}
       autoClose={3000}
       transition={Slide}
-      toastStyle={{ backgroundColor: "#FFD7D7" }}
     />
   );
 }

@@ -1,12 +1,12 @@
-const getAllPosts = (axiosFetch, page) => {
-  axiosFetch({
+const getAllPosts = async (axiosFetch, page) => {
+  await axiosFetch({
     url: `/api/posts?page=${page}`,
     method: "GET",
   });
 };
 
-const createPost = (axiosFetch, postData) => {
-  axiosFetch({
+const createPost = async (axiosFetch, postData) => {
+  await axiosFetch({
     url: "/api/posts",
     method: "POST",
     requestConfig: {
@@ -18,15 +18,15 @@ const createPost = (axiosFetch, postData) => {
   });
 };
 
-const deletePost = (axiosFetch, postId) => {
-  axiosFetch({
+const deletePost = async (axiosFetch, postId) => {
+  await axiosFetch({
     url: `/api/posts/${postId}`,
     method: "DELETE",
   });
 };
 
-const updatePost = (axiosFetch, postId, postData) => {
-  axiosFetch({
+const updatePost = async (axiosFetch, postId, postData) => {
+  await axiosFetch({
     url: `/api/posts/${postId}`,
     method: "PUT",
     requestConfig: {
