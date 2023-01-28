@@ -18,7 +18,14 @@ exports.createComment = (req, res) => {
                         content: req.body.content,
                         postId: req.params.postId
                     })
-                        .then(() => res.status(201).json({ message: 'Comment created !' }))
+                        .then((createdComment) => {
+                            Comment.findOne({
+                                where: { id: createdComment.id },
+                                include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'username'] }],
+                            })
+                                .then((newComment) => res.status(201).json(newComment))
+                                .catch(() => res.status(500).json({ error: 'Internal server error' }));
+                        })                        
                         .catch(() => res.status(500).json({ error: 'Internal server error' }));
                 }
             })
@@ -48,8 +55,6 @@ exports.getAllCommentsByPost = (req, res) => {
         offset: ((page - 1) * limit)
     })
         .then((comments) => {
-            console.log('COMMENTS');
-            console.log(comments);
             if (!comments) {
                 return res.status(404).json({ error: 'Resource not found' });
             } else {
@@ -89,7 +94,7 @@ exports.modifyComment = (req, res) => {
                     if (commentData) {
                         Comment.update({ ...commentData }, { where: { id: req.params.id } })
                             .then(() => res.status(200).json({ message: 'Comment updated !' }))
-                            .catch(error => res.status(500).json({ error : 'Internal server error' }));
+                            .catch(() => res.status(500).json({ error : 'Internal server error' }));
                     } else {
                         return res.status(400).json({ error: 'Client input error' });
                     }
@@ -119,3 +124,18 @@ exports.deleteComment = (req, res) => {
         })
         .catch(() => res.status(500).json({ error : 'Internal server error' }));
 };
+
+exports.commentsCount = async (req, res) => {
+    try {
+        const commentsTotal = await Comment.count({
+            where: { postId: req.params.postId },
+            include: [{ model: User, required: true, where: { isActive: true } }]
+        });
+
+        res.status(200).json({
+            commentsTotal
+        });
+    } catch (err) {
+        return res.status(500).json({ error: 'Internal server error 1810' })
+    }
+ };

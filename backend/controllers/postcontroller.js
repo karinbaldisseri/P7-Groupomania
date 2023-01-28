@@ -15,7 +15,14 @@ exports.createPost = (req, res) => {
     } : { userId: req.auth.userId, content: req.body.content };
     if (postData) {
         Post.create({ ...postData })
-            .then(() => res.status(201).json({ message : 'Post created !'}))
+            .then((createdPost) => {
+                Post.findOne({
+                    where: { id: createdPost.id },
+                    include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'username'] }],
+                })
+                    .then((newPost) => res.status(201).json(newPost))
+                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
+            })
             .catch(() => res.status(500).json({ error: 'Internal server error' }));
     } else {
         return res.status(401).json({ error: 'Client input error or unauthorized request' })
@@ -47,7 +54,7 @@ exports.getAllPosts = (req, res) => {
     let limit = parseInt(req.query.limit);
 
     if (!limit || !Number.isFinite(limit) || limit <= 0 || limit > 50) {
-        limit = 10;
+        limit = 6; // changed to 6 instead of 10
     }
     if (!page || !Number.isFinite(page) || page <= 0) {
         page = 1;
@@ -84,20 +91,15 @@ exports.getAllPosts = (req, res) => {
         .catch(() => res.status(500).json({ error : 'Internal server error' }));
 }
 
-/* exports.getAllPosts = (req, res) => {
-    récupérer les query 
-    paginatedPosts = paginate.paginatedResults(Post);
-    return res.status(200).json(paginatedPosts);
-}; */
-
-
 // UPDATE Post -> PUT
 exports.modifyPost = (req, res) => {
-     // Check if image file in request
+     // Check if image file in request , then if currentImage (if yes means to delete it)
     const postData = req.file ? {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         content: req.body.content
-    } : { content: req.body.content };
+    } : req.body.currentImage ? { content: req.body.content, imageUrl: null } : { content: req.body.content };
+    console.log("POSTDATA");
+    console.log(postData);
     Post.findOne({ where: { id: req.params.id } })
         .then((post) => {
             if (!post) {
@@ -106,13 +108,26 @@ exports.modifyPost = (req, res) => {
                 if (post.userId === req.auth.userId || req.auth.isAdmin) {
                     if (postData) {
                         // If image to update - delete old image file
-                        if (postData.imageUrl) {
+                        if (postData.imageUrl && post.imageUrl || req.body.currentImage === "none" ) {
                             const filename = post.imageUrl.split('/images/')[1];
                             fs.unlink(`images/${filename}`, () => { });
                          }
-                        Post.update({ ...postData}, { where: { id: req.params.id } })
-                            .then(() => res.status(200).json({ message: 'Post updated !' }))
-                            .catch(error => res.status(500).json({ error : 'Internal server error' }));
+                        Post.update({ ...postData }, { where: { id: req.params.id } })
+                            .then(() => {
+                                Post.findOne({
+                                    where: { id: req.params.id },
+                                    include: [{ model: User, required: true, attributes: ['id', 'firstname', 'lastname', 'username'] }],
+                                })
+                                    .then((newPost) => {
+                                        if (!newPost) {
+                                            res.status(404).json({ error: 'Resource not found' });
+                                        } else {
+                                            res.status(200).json(newPost);
+                                        }
+                                    })
+                                    .catch(() => res.status(500).json({ error : 'Internal server error' }));
+                            })
+                            .catch(() => res.status(500).json({ error : 'Internal server error' }));
                     } else {
                          return res.status(400).json({ error: 'Client input error' });
                     }

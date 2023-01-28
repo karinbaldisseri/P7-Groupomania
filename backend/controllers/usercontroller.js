@@ -63,6 +63,7 @@ exports.login = (req, res) => {
                                 res.status(200).json({
                                     // Create token
                                     userId: user.id,
+                                    isAdmin: user.isAdmin,
                                     token: jwt.sign({
                                         userId: user.id,
                                         isAdmin: user.isAdmin
@@ -105,30 +106,45 @@ exports.modifyUser = (req, res) => {
     const userData = { ...req.body };
     // if use id as params in url => check id = id in url & id in auth
     // User.findOne({ where: { [Op.and]: [{ id: req.params.id }, { id: req.auth.userId }] } })
-        User.findOne({ attributes: ['id', 'firstname', 'lastname'], where: { id: req.auth.userId } })
+    User.findOne({ attributes: ['id', 'firstname', 'lastname', 'password'], where: { id: req.auth.userId } })
         .then((user) => {
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized request !' });
             } else {
-                if (userData.password) {
-                    bcrypt.hash(userData.password, 10)
-                        .then(hash => {
-                            // if use id as params in url => check id = id in url & id in auth
-                            //User.update({ ...userData, password: hash }, { where: { id: req.params.id, id: req.auth.userId } })
-                            User.update({ ...userData, password: hash }, { where: { id: req.auth.userId } })
-                            .then(() => res.status(200).json({ message: 'User updated !' }))
-                            .catch(() => res.status(500).json({ error: 'Internal server error' }));
-                    })
-                } else {
+                if (userData.newPassword && userData.oldPassword) {
+                    // Check if password is valid
+                    bcrypt.compare(userData.oldPassword, user.password)
+                        .then((validPassword) => {
+                            if (!validPassword) {
+                                return res.status(401).json({ message: 'Client input error1' });
+                            } else {
+                                bcrypt.hash(userData.newPassword, 10)
+                                    .then(hash => {
+                                        delete userData.oldPassword;
+                                        console.log("USERDATA");
+                                        console.log(userData);
+                                        // if use id as params in url => check id = id in url & id in auth
+                                        //User.update({ ...userData, password: hash }, { where: { id: req.params.id, id: req.auth.userId } })
+                                        User.update({ ...userData, password: hash }, { where: { id: req.auth.userId } })
+                                            .then(() => res.status(200).json({ message: 'User updated !' }))
+                                            .catch(() => res.status(500).json({ error: 'Internal server error' }));
+                                    })
+                                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
+                            }
+                        })
+                        .catch(() => res.status(500).json({ error: 'Internal server error' }));
+                } else if (!userData.newPassword && !userData.oldPassword) {
                     // if use id as params in url => check id = id in url & id in auth
                     //User.update({ ...userData }, { where: { id: req.params.id, id: req.auth.userId } })
                     User.update({ ...userData }, { where: { id: req.auth.userId } })
                         .then(() => res.status(200).json({ message: 'User updated !' }))
                         .catch(() => res.status(500).json({ error: 'Internal server error' }));
-                    }
+                } else {
+                    return res.status(401).json({ message: 'Client input error2' });
+                }
             }
         })
-        .catch(() => res.status(500).json({ error: 'Internal server error' }))
+        .catch(() => res.status(500).json({ error: 'Internal server error' }));
 };
 
 // DELETE USER

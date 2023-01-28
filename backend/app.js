@@ -8,7 +8,7 @@ const dbSequelize = require('./config/database');
 const userRoutes = require('./routes/userroutes');
 const postRoutes = require('./routes/postroutes');
 const commentRoutes = require('./routes/commentroutes');
-const limiter = require('./middlewares/rate-limiter');
+// const limiter = require('./middlewares/rate-limiter');
 
 const app = express();
 
@@ -16,7 +16,7 @@ const app = express();
 dbSequelize.authenticate()
   .then(() => {
     console.log("Connection to database successful !")
-    dbSequelize.sync({ alter: true })
+    dbSequelize.sync(/* { alter: true } */)
       .then(console.log('Database synced !'))
       .catch(error => console.log(error))
   })
@@ -34,7 +34,7 @@ app.use(helmet());
 // OR app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
 // Express-rate-limit - Protects from brute force type attacks 
-app.use(limiter);
+// app.use(limiter);
 // Sécurité CORS (Cross-origin resource sharing) -  Prevents from Cors attacks
 app.use(cors());
 // add specific headers to allow controlled acces between different origins / servers

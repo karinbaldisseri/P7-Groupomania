@@ -57,7 +57,28 @@ exports.addOrRemoveLike = async (req, res) => {
         .catch(() => res.status(500).json({ error: 'Internal server error' }));
 };
 
-// READ - Get likes & dislikes Totals -> GET
+// READ - Get like or dislike by post && by user
+exports.getLikeByPostByUser = async (req, res) => {
+    Post.findOne({ where: { id: req.params.id } })
+        .then((post) => {
+            if (!post) {
+                res.status(404).json({ error: 'Resource not found' });
+            } else {
+                Like.findOne({ where: { postId: req.params.id, userId: req.auth.userId } })
+                    .then((likeFound) => { 
+                        if (!likeFound) {
+                            res.status(200).json({ message: "No like found "});
+                        } else {
+                            res.status(200).json(likeFound);
+                       }
+                    })
+                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
+            }
+        })
+        .catch(() => res.status(500).json({ error: 'Internal server error' }));
+};
+
+// READ - Get likes & dislikes Totals by post -> GET
 exports.likeCount = async (req, res) => {
     try {
         const likesTotal = await Like.count({

@@ -41,7 +41,7 @@ const User = dbSequelize.define('user', {
   username: {
     type: Sequelize.VIRTUAL,
     get() {
-      return `${this.firstname}${this.lastname}`;
+      return `${this.firstname} ${this.lastname}`;
     },
     /* set(value) {
       throw new Error('Do not try to set the "username" value !');
