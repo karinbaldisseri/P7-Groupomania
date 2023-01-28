@@ -48,6 +48,7 @@ function Likes({ postId }) {
     if (likeCountErr || commCountErr || likeErr || voteErr && !ignore) {
       setErrMsg("Erreur de chargement !")
     } 
+    setErrMsg("");
     return () => { ignore = true };
   }, [likeCountErr, commCountErr, likeErr, voteErr]);
 
@@ -128,10 +129,10 @@ function Likes({ postId }) {
       {likeCountLoad || likeLoad || (voteLoad && !voteRes) && <p className="loading">Chargement en cours</p>}
        <p
           ref={errRef}
-          className={!errMsg ? "errMsg" : "offscreen"}
+          className={errMsg ? "errMsg" : "offscreen"}
           aria-live="assertive"
         >
-          {errMsg} Erreur de chargement
+          {errMsg}
         </p>
       {commentsOpen && (
         <CommentsFeed postId={postId} setCommentsCount={setCommentsCount} />

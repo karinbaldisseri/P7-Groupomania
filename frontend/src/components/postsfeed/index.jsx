@@ -6,7 +6,7 @@ import "./postsfeed.scss";
 import { getAllPosts } from "../../api/calls/postcalls";
 
 function PostsFeed() {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(undefined); // []
   const [page, setPage] = useState(1);
   const errRef = useRef();
   const effectRan = useRef(false);
@@ -30,7 +30,11 @@ function PostsFeed() {
   // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (response) {
-      setPosts((prev) => [...prev, ...response.items]);
+      if (!posts) {
+        setPosts(response.items);
+      } else {
+        setPosts((prev) => [...prev, ...response.items]);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]); // response
@@ -97,7 +101,7 @@ function PostsFeed() {
           <p
             ref={errRef}
             className={fetchError ? "errMsg" : "offscreen"}
-            aria-live="assertive" // if focus on this ref element, it will be announced with the screen reader
+            aria-live="assertive"
           >
             {fetchError}
           </p>

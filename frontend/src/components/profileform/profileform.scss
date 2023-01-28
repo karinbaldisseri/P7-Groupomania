@@ -1,0 +1,65 @@
+@use "../../stylesUtils/" as *;
+
+.profilePage {
+  .profileContainer {
+    .userIcon {
+      height: 100px;
+      width: 150px;
+      font-size: 100px;
+      padding: 10px 0;
+      border-bottom: 3px solid $secondary-color;
+    }
+    article {
+      margin: 0 auto;
+      width: 100%;
+      button {
+        margin: 15px auto 0 auto;
+        width: fit-content;
+      }
+      h2 {
+        text-align: left;
+        font-size: 14px;
+        margin: 15px 0 6px 0;
+        @include mobiles {
+          margin: 15px 0 12px 0;
+        }
+      }
+      form {
+        margin-top: 15px;
+      }
+      .pwdContainer {
+        text-align: left;
+        input {
+          width: 100%;
+        }
+      }
+      .deleteBtn {
+        width: 90%;
+        font-size: 14px;
+        background-color: $secondary-color;
+        color: $primary-color;
+      }
+      .deactivateBtn {
+        margin-top: 10px;
+      }
+    }
+  }
+}
+
+.react-confirm-alert-overlay {
+  background: rgba(0, 0, 0, 0.65);
+  .react-confirm-alert-body {
+    width: 500px;
+    h1 {
+      margin-bottom: 15px;
+    }
+    .react-confirm-alert-button-group {
+      button {
+        background: $tertiary-color;
+        font-size: 15px;
+        padding: 10px 25px;
+        margin-top: 5px;
+      }
+    }
+  }
+}

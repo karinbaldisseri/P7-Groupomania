@@ -43,10 +43,8 @@ function Comment({ comment, onDelete, onUpdate }) {
       setErrMsg("Merci d'inclure du texte");
     } else if (auth.userId === comment.userId || auth.isAdmin) {
       updateComment(updateCommAxiosFetch, comment.postId, comment.id, content);
-      // if updateCommLoad => toast.load
-     // if (updateCommRes) {
-        onUpdate(comment.id, content);
-      /* } else */ if (updateCommErr && !updateCommRes) {
+      onUpdate(comment.id, content);
+      if (updateCommErr && !updateCommRes) {
         setErrMsg(updateCommErr);
       }
       setTrigger(false);
@@ -57,9 +55,8 @@ function Comment({ comment, onDelete, onUpdate }) {
   const handleDelete = () => {
     if (auth.userId === comment.userId || auth.isAdmin) {
       deleteComment(deleteCommAxiosFetch, comment.postId, comment.id);
-      // if (deleteCommRes) {
-        onDelete(comment.id);
-      /* } else */ if (deleteCommErr && !deleteCommRes) {
+      onDelete(comment.id);
+      if (deleteCommErr && !deleteCommRes) {
         setErrMsg(deleteCommErr);
       }
       setTrigger(false);
@@ -89,7 +86,7 @@ function Comment({ comment, onDelete, onUpdate }) {
       <p
         ref={errRef}
         className={errMsg ? "errMsg" : "offscreen"}
-        aria-live="assertive" // if focus on this ref element, it will be announced with the screen reader
+        aria-live="assertive"
       >
         {errMsg}
       </p>
@@ -152,7 +149,6 @@ function Comment({ comment, onDelete, onUpdate }) {
           <>
             <TextareaAutosize
               ref={focusRef}
-              // className="content"
               autoComplete="off"
               value={content}
               onChange={(e) => setContent(e.target.value)}

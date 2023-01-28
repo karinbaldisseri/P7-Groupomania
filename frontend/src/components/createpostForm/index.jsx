@@ -2,14 +2,16 @@
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
-import { FaTimes, FaUserCircle } from "react-icons/fa";
+import { FaTimes, FaUserCircle, FaPaperPlane, FaImage } from "react-icons/fa";
 import TextareaAutosize from "react-textarea-autosize";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
+import useWindowSize from "../../hooks/useWindowSize";
 import { getOneUser } from "../../api/calls/usercalls";
 import { createPost } from "../../api/calls/postcalls";
 import "./createpostform.scss";
 
 function CreatePostForm({ onCreate }) {
+  const { width } = useWindowSize();
   const [postText, setPostText] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [errMsg, setErrMsg] = useState("");
@@ -87,7 +89,6 @@ function CreatePostForm({ onCreate }) {
 
         <TextareaAutosize
           autoComplete="off"
-          // className="content"
           value={postText}
           placeholder="Quoi de neuf aujourd'hui ?"
           required
@@ -115,7 +116,11 @@ function CreatePostForm({ onCreate }) {
             disabled={!postText}
             onClick={() => fileInput.current.click()}
           >
-            Ajouter une image
+            {width > 768 ? (
+              "Ajouter une image"
+            ) : (
+              <FaImage title="Ajouter une image" />
+            )}
           </button>
           {imageUrl && (
             <div className="previewImgContainer">
@@ -137,7 +142,11 @@ function CreatePostForm({ onCreate }) {
             disabled={!postText}
             className={!postText ? "disabled" : "notDisabled"}
           >
-            Poster
+            {width > 768 ? (
+              "Poster"
+            ) : (
+              <FaPaperPlane title="Poster le message" />
+            )}
           </button>
         </div>
       </form>

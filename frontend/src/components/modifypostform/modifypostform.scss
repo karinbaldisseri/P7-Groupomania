@@ -4,14 +4,14 @@
   margin: 0;
   .formItems {
     .content {
-      border-radius: 5px;
       margin:0 0 10px 0;
       padding: 5px 10px;
+      border-radius: 5px;
     }
     .btnsContainer {
-      margin: 5px 10px 10px 10px;
-      align-items:center;
+      align-items: center;
       height: fit-content;
+      margin: 5px 10px 10px 10px;
       button {
         margin-top: 5px;
       }
@@ -19,17 +19,14 @@
     .previewImgContainer {
       margin: 0 auto;
     }
-    /* .undoContainer {
-      @include flex-center; */
-      .undoChanges {
-        color: $primary-color;
-        margin: 0 10px;
-        text-align: center;
-      }
-      .infoIcon {
-        fill: $primary-color;
-        margin-right: 10px;
-      }
-    // }
+    .undoChanges {
+      color: $primary-color;
+      margin: 0 10px;
+      text-align: center;
+    }
+    .infoIcon {
+      fill: $primary-color;
+      margin-right: 10px;
+    }
   }
 }

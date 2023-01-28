@@ -31,7 +31,7 @@ const useAxiosFetchFunction = () => {
       if (!err?.response || err.response.status === 500) {
         setFetchError("Erreur interne du serveur");
       }
-      setFetchError(err.response.statusText);
+      setFetchError(err?.response?.statusText);
       return err;
     } finally {
       setLoading(false);

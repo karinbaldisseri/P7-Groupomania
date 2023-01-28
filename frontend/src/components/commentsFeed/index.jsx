@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -24,6 +25,8 @@ function CommentsFeed({ postId, setCommentsCount }) {
   useEffect(() => {
     focusRef.current.focus();
     if (effectRan.current === true) {
+    /* let ignore = false;
+    if (!ignore) { */
       getCommentsByPost(commentsAxiosFetch, postId, page);
       if (commentsError) {
         setErrMsg(commentsError);
@@ -31,14 +34,16 @@ function CommentsFeed({ postId, setCommentsCount }) {
         setErrMsg("");
       }
     }
+    // return () => { ignore = true };
     return () => {
       effectRan.current = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
+    // let ignore = false;
+    // if (!ignore && commentsResponse !==null && !commentsResponse.message) {
     if (effectRan.current === true && commentsResponse !== null && !commentsResponse.message) {
       if (!comments) {
         setComments(commentsResponse.items);
@@ -47,10 +52,10 @@ function CommentsFeed({ postId, setCommentsCount }) {
       }
       setPage(commentsResponse.nextPage);
     }
+    // return () => { ignore = true };
     return () => {
       effectRan.current = true;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentsResponse]);
 
   useEffect(() => {
@@ -62,7 +67,6 @@ function CommentsFeed({ postId, setCommentsCount }) {
         setComments((prev) => [createCommRes, ...prev]);
       } 
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createCommRes]);
 
   const handleSubmit = async (e) => {

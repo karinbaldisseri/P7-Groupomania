@@ -12,9 +12,15 @@ export default function Login() {
             src={LoginImg}
             className="connectImg"
             alt="paysage d'immeubles"
+            loading="lazy"
           />
           <div className="imgText">
-            <img src={WhiteLogo} className="logo" alt="Logo de Groupomania" />
+            <img
+              src={WhiteLogo}
+              className="logo"
+              alt="Logo de Groupomania"
+              loading="lazy"
+            />
             <h1>Bienvenue sur votre réseau social d'entreprise</h1>
           </div>
         </div>

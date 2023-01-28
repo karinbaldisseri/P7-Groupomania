@@ -19,8 +19,7 @@
           flex: 2;
           padding: 3px 10px;
           background: $background-primary;
-          border: 2px solid rgb(233, 233, 233);
-          border-radius: 10px;
+          @include input-border;
           p {
             margin: 0;
             font-weight: 400;

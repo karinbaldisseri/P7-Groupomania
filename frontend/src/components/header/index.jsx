@@ -1,11 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaUserCircle, FaNewspaper } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import RedLogo from "../../assets/icon-red.png";
+import useWindowSize from "../../hooks/useWindowSize";
 import "./header.scss";
 
 export default function Header() {
   const { setAuth } = useAuth();
+  const { width } = useWindowSize();
 
   const handleLogout = () => {
     setAuth("");
@@ -31,7 +33,11 @@ export default function Header() {
                 return isActive ? "activeLink" : "";
               }}
             >
-              Fil d'actualités
+              {width > 768 ? (
+                "Fil d'actualités"
+              ) : (
+                <FaNewspaper title="Fil d'actualités" />
+              )}
             </NavLink>
           </li>
           <li>
@@ -41,11 +47,11 @@ export default function Header() {
                 return isActive ? "activeLink" : "";
               }}
             >
-              Mon profil
+              {width > 768 ? "Mon profil" : <FaUserCircle title="Mon profil" />}
             </NavLink>
           </li>
           <li>
-            <FaSignOutAlt onClick={handleLogout} title="Logout" />
+            <FaSignOutAlt onClick={handleLogout} title="Me déconnecter" />
           </li>
         </ul>
       </nav>

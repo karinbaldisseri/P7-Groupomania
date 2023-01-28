@@ -6,6 +6,7 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
+import useWindowSize from "../../hooks/useWindowSize";
 import useAuth from "../../hooks/useAuth";
 import Likes from "../likes";
 import ModifyPostForm from "../modifypostform";
@@ -15,6 +16,7 @@ import { deletePost } from "../../api/calls/postcalls";
 moment.locale("fr");
 
 function Post({ post, onDelete, onUpdate }) {
+  const { width } = useWindowSize();
   const { auth } = useAuth();
   const [open, setOpen] = useState(false);
   const [trigger, setTrigger] = useState(false);
@@ -110,11 +112,11 @@ function Post({ post, onDelete, onUpdate }) {
                 }}
               >
                 <FaPen fill="grey" className="dropDownIcon" />
-                Modifier
+                {width > 768 ? "Modifier" : ""}
               </button>
               <button type="button" onClick={confirmDelete}>
                 <FaTrashAlt fill="grey" className="dropDownIcon" />
-                Supprimer
+                {width > 768 ? "Supprimer" : ""}
               </button>
             </div>
           )}
@@ -141,6 +143,7 @@ function Post({ post, onDelete, onUpdate }) {
               className="postImg"
               src={post.imageUrl}
               alt="relative à ce post"
+              loading="lazy"
             />
           </>
         )}

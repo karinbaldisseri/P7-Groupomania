@@ -1,11 +1,12 @@
 @use "../../stylesUtils/" as *;
   
   .postsFeedContainer {
+    @include flex-column-center;
     width: 85%;
     margin: 0 auto;
-    /* .errMsg {
-        font-weight: bold;
-      } */
+    @include mobiles {
+      width: 92%;
+    }
     .linkBtn {
       padding: 5px 10px;
       cursor: pointer;

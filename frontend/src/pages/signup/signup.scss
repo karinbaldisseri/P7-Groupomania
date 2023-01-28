@@ -4,8 +4,8 @@
   min-height: 85vh;
   @include flex-center;
   @include mobiles {
-    display: block;
-    width: 100%;
+  display: block;
+  width: 100%;
   }
   .connectMainSection {
     display: flex;
@@ -17,8 +17,7 @@
     margin: 5% 10%;
     border-radius: 10px;
     @include mobiles {
-      flex-direction: column;
-      align-items: center;
+      @include flex-column-center;
       width: 100%;
       min-width: 350px;
       margin: 0;
@@ -71,6 +70,7 @@
       border-radius: 0 10px 10px 0;
       @include mobiles {
         border-radius: 10px;
+        max-width: 500px;
         width: 85%;
         margin: 25px 15px 10px 15px;
       }

@@ -1,17 +1,20 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { toast } from "react-toastify";
-import { FaInfoCircle } from "react-icons/fa";
+import { FaImage, FaInfoCircle, FaPaperPlane } from "react-icons/fa";
+import { MdImageNotSupported } from "react-icons/md";
 import TextareaAutosize from "react-textarea-autosize";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
 import useAuth from "../../hooks/useAuth";
+import useWindowSize from "../../hooks/useWindowSize";
 import { updatePost } from "../../api/calls/postcalls";
 import "./modifypostform.scss";
 
-// eslint-disable-next-line prettier/prettier
 function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId, postId, onUpdate, onClose }) {
   const { auth } = useAuth();
+  const { width } = useWindowSize();
   const fileInput = useRef(null);
   const [errMsg, setErrMsg] = useState("");
   const [updatedImage, setUpdatedImage] = useState(false);
@@ -87,7 +90,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
         />
         {imageUrl && !updatedImage && (
           <div>
-            <img className="postImg" src={imageUrl} alt="relative à ce post" />
+            <img className="postImg" src={imageUrl} alt="relative à ce post" loading="lazy"/>
             <div className="btnsContainer">
               <button
                 type="button"
@@ -98,7 +101,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                   setDeleteImage(true);
                 }}
               >
-                Supprimer l'image
+                {width > 768 ? (
+                  "Supprimer l'image"
+                ) : (
+                  <MdImageNotSupported title="Supprimer l'image" />
+                )}
               </button>
               <button
                 type="submit"
@@ -106,7 +113,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 className={!content ? "disabled" : "notDisabled"}
                 disabled={!content}
               >
-                Enregistrer
+                {width > 768 ? (
+                  "Enregistrer"
+                ) : (
+                  <FaPaperPlane title="Enregistrer" />
+                )}
               </button>
             </div>
           </div>
@@ -136,7 +147,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 setUpdatedImage(true);
               }}
             >
-              Ajouter une image
+              {width > 768 ? (
+                "Ajouter une image"
+              ) : (
+                <FaImage title="Ajouter une image" />
+              )}
             </button>
             <button
               type="submit"
@@ -144,7 +159,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
               className={!content ? "disabled" : "notDisabled"}
               disabled={!content}
             >
-              Enregistrer
+              {width > 768 ? (
+                "Enregistrer"
+              ) : (
+                <FaPaperPlane title="Enregistrer" />
+              )}
             </button>
           </div>
         )}
@@ -156,6 +175,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 src={URL.createObjectURL(imageUrl)}
                 alt="aperçu de l'image du post"
                 title={imageUrl.name}
+                loading="lazy"
               />
             </div>
             <div className="btnsContainer">
@@ -167,7 +187,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                   setUpdatedImage(true);
                 }}
               >
-                Supprimer l'image
+                {width > 768 ? (
+                  "Supprimer l'image"
+                ) : (
+                  <MdImageNotSupported title="Supprimer l'image" />
+                )}
               </button>
               <button
                 type="submit"
@@ -175,7 +199,11 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
                 className={!content ? "disabled" : "notDisabled"}
                 disabled={!content}
               >
-                Enregistrer
+                {width > 768 ? (
+                  "Enregistrer"
+                ) : (
+                  <FaPaperPlane title="Enregistrer" />
+                )}
               </button>
             </div>
           </>
@@ -195,7 +223,6 @@ ModifyPostForm.propTypes = {
   imageUrl: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   // eslint-disable-next-line react/forbid-prop-types
   setImageUrl: PropTypes.any,
-  // setImageUrl: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   postUserId: PropTypes.number.isRequired,
   postId: PropTypes.number.isRequired,
   onUpdate: PropTypes.func.isRequired,

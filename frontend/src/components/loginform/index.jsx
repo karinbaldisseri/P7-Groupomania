@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable prettier/prettier */
 import { useState, useEffect, useRef } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
@@ -18,9 +20,7 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errMsg, setErrMsg] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [emailFocus, setEmailFocus] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [pwdFocus, setPwdFocus] = useState("");
   const [showPwd, setShowPwd] = useState(false);
 
@@ -35,17 +35,17 @@ function LoginForm() {
   }, [email, password]);
 
   useEffect(() => {
-    let ignore = false;
-    if (response && !ignore) {
+    // let ignore = false;
+    if (response /* && !ignore */) {
       setEmail("");
       setPassword("");
       setAuth({ token: response?.token, userId: response?.userId, isAdmin: response?.isAdmin });
       navigate(from, { replace: true });
-    } else if (fetchError && !ignore) {
+    } else if (fetchError /* && !ignore */) {
       setErrMsg(fetchError);
       errRef.current.focus();
     }
-    return () => { ignore = true };
+    // return () => { ignore = true };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response, fetchError]);
 
@@ -58,49 +58,9 @@ function LoginForm() {
       return;
     }
     loginUser(axiosFetch, email, password);
-    /* setAuth({ token: response?.token, userId: response?.userId, isAdmin: response?.isAdmin });
-    navigate(from, { replace: true }); */
+    setShowPwd(false);
+    setErrMsg(fetchError);
   };
-
-  /* const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setErrMsg(
-        "Saisie incorrecte, veuillez vérifier l'email et le mot de passe saisi."
-      );
-      return;
-    }
-    try {
-      const response = await axios.post(
-        "/api/auth/login",
-        JSON.stringify({ email, password }),
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      const token = response?.data?.token;
-      const userId = response?.data?.userId;
-      const isAdmin = response?.data?.isAdmin;
-      setAuth({ token, userId, isAdmin });
-      // clear input fields (need value attributes in inputs for this)
-      setEmail("");
-      setPassword("");
-      // redirect to login
-      navigate(from, { replace: true });
-    } catch (err) {
-      // (err?.response) = chainage optionnel (dans l'éventualité d'une référence manquante)
-      if (!err?.response || err.response.status === 500) {
-        setErrMsg("Erreur interne du serveur");
-      } else if (err.response.status === 400 || err.response?.status === 401) {
-        setErrMsg("Erreur de saisie, veuillez vérifier les champs requis");
-      } else if (err.response.status === 403) {
-        setErrMsg("Compte désactivé, merci de contacter votre administrateur");
-      } else {
-        setErrMsg("Désolé, la connexion n'a pas pu aboutir");
-      }
-      errRef.current.focus();
-    }
-  }; */
 
   return (
     <article className="formContainer">
@@ -109,14 +69,14 @@ function LoginForm() {
         <p
           ref={errRef}
           className={errMsg ? "errMsg" : "offscreen"}
-          aria-live="assertive" // if focus on this ref element, it will be announced with the screen reader
+          aria-live="assertive"
         >
           {errMsg}
         </p>
         {loading && <p>Chargement en cours ...</p>}
 
-        <label htmlFor="email">
-          Email :
+        <div className="labelAndInputContainer">
+          <label htmlFor="email"> Email :</label>
           <input
             type="email"
             id="email"
@@ -128,10 +88,10 @@ function LoginForm() {
             onFocus={() => setEmailFocus(true)}
             onBlur={() => setEmailFocus(false)}
           />
-        </label>
+        </div>
 
-        <label htmlFor="password">
-          Mot de passe :
+        <div className="labelAndInputContainer">
+          <label htmlFor="password">Mot de passe :</label>
           <div className="pwdContainer">
           <input
             type={showPwd ? "text" : "password"}
@@ -147,9 +107,8 @@ function LoginForm() {
               {!showPwd ? <FaEye /> : <FaEyeSlash />}
             </button>
           </div>
-
-        </label>
-
+        </div>
+        
         <p className="required">* Tous les champs sont requis</p>
         <button
           type="submit"

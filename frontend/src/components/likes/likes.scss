@@ -25,12 +25,8 @@
   .likesBtns {
       padding: 0 20px;
       @include flex-center;
-      /* display: flex;
-      align-items: center; */
       button {
         @include flex-center;
-        /* display: flex;
-        align-items: center; */
         &:hover {
             transform: scale(1.15);
           }

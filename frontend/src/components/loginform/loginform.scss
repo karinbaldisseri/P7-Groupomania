@@ -1,41 +1,13 @@
 @use "../../stylesUtils/" as *;
 
 .loginForm {
-  label {
+  .labelAndInputContainer {
     margin-bottom: 10px;
-    width: 100%;
   }
-  .pwdContainer {
-    position: relative;
-    background-color: $background-primary;
-    border: 2px solid rgb(233, 233, 233);
-    padding: 0;
-    border-radius: 10px;
-    height: 36.5px;
-    width: 100%;
-    &:focus-within {
-      outline: 3px solid #FFD7D7;
-      border: none;
-    }
-    input {
-      background-color: transparent;
-      border: none;
-      margin: 0;
-      &:focus {
-        outline: none;
-      }
-    }
-    .showPwd {
-      position: absolute;
-      top: 8px;
-      right: 5px;
-      background-color: $background-primary;
-      margin: 0;
-      padding: 0 5px 0 5px;
-      width: fit-content;
-      svg {
-          color: $tertiary-color;
-      }
+  label {
+    width: fit-content;
+    @include mobiles {
+      width: 100%;
     }
   }
 }

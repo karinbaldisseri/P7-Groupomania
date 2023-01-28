@@ -18,10 +18,7 @@
 .formContainer {
   margin: 20px 0;
   width: 80%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  @include flex-column-center;
   h1 {
     font-size: 26px;
     text-align: center;
@@ -52,13 +49,16 @@
       cursor: pointer;
     }
     .notDisabled:hover {
-          box-shadow: 1px 1px 4px 4px rgba(0, 0, 0, 0.15);
-        }
+      @include shadow;
+    }
     .disabled {
       cursor: default;
       &:hover {
         opacity: 0.6;
       }
+    }
+    .passwordLabelAndInput {
+      margin: 5px 0;
     }
     .labelAndInputContainer {
       display: flex;
@@ -67,41 +67,78 @@
         flex-direction: column;
         align-items: flex-start;
       }
-      @include mobiles {
+      @include tablets {
         margin-bottom: 8px;;
+      }
+      .pwdContainer {
+        flex: 2;
+        position: relative;
+        height: 36.5px;
+        width: 100%;
+        margin-left: 10px;
+        padding: 0;
+        background-color: $background-primary;
+        @include input-border;
+        &:focus-within {
+          @include focus-border;
+        }
+        @include tablets {
+          margin-top: 5px;
+          margin-left: 0;
+        }
+        input {
+          flex: 2;
+          background-color: transparent;
+          border: none;
+          margin: 0;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+      .showPwd {
+        position: absolute;
+        top: 8px;
+        right: 5px;
+        background-color: $background-primary;
+        width: fit-content;
+        margin: 0;
+        padding: 0 5px 0 5px;
+        outline: none;
+        svg {
+          color: $tertiary-color;
+        }
       }
     }
     label {
      text-align: left;
      font-size: 12px;
+     @include tablets {
+      padding-left: 10px;
+     }
     }
     input, textarea {
       flex: 3;
       padding: 8px 10px;
       margin: 5px 0 5px 10px;
-      border: 2px solid rgb(233, 233, 233);
-      border-radius: 10px;
       background-color: $background-primary;
+      @include input-border;
       @include tablets {
-        margin-left: 0;
         width: 100%;
         padding: 7px 10px;
-      }
-      @include mobiles {
-        
+        margin-left: 0;
       }
       &:focus {
-        outline: 3px solid $secondary-color;
-        border: none;
+        @include focus-border;
       }
     }
     .instructions{
       color: $primary-color;
       margin: 5px 0;
       svg {
-          margin-right: 10px;
-          fill: $primary-color;
-        }
+        fill: $primary-color;
+        margin-right: 10px;
+      }
     }
     .valid {
       margin-left: 10px;

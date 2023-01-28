@@ -2,14 +2,20 @@
 
 .postswallPage {
   .postswallContainer {
-    display: flex;
+    @include flex-column-center;
+    /* display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; */
     background: $background-primary;
     max-width: 75vw;
     text-align: center;
     margin: 80px auto 60px auto;
     padding: 25px 50px 25px 50px;
     border-radius: 10px;
+    @include mobiles {
+      margin: 100px auto 20px auto;
+      max-width: 85vw;
+      padding: 20px;
+    }
   }
 }

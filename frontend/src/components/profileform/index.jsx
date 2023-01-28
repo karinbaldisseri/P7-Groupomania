@@ -1,22 +1,29 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaCheck, FaInfoCircle, FaTimes } from "react-icons/fa";
+import { FaCheck, FaInfoCircle, FaTimes, FaEyeSlash, FaEye } from "react-icons/fa";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import { toast } from "react-toastify";
 import InputField from "../InputField";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
+import useWindowSize from "../../hooks/useWindowSize";
 import { getOneUser, updateUser, deleteUser, deactivateUser } from "../../api/calls/usercalls";
 import useAuth from "../../hooks/useAuth";
 import "../signupform/forms.scss";
+import "./profileform.scss";
 
 export default function ProfileForm() {
   const { auth } = useAuth();
+  const { width } = useWindowSize();
   const navigate = useNavigate();
   const errRef = useRef();
   const [errMsg, setErrMsg] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const [showOldPwd, setShowOldPwd] = useState(false);
 
   const [inputs, setInputs] = useState({ firstname: "", lastname: "", password: "", confirmPwd: "", oldPassword: "" });
   const [validInputs, setValidInputs] = useState({ firstname: true, lastname: true, password: false });
@@ -25,8 +32,8 @@ export default function ProfileForm() {
   const validPassword = validInputs.password;
 
   // eslint-disable-next-line no-unused-vars
-  const [oldPasswordFocus, setOldPasswordFocus] = useState(false);
-
+  const [oldPwdFocus, setOldPwdFocus] = useState(false);
+  const [passwordFocus, setPasswordFocus] = useState(false);
   const [confirmPwdFocus, setConfirmPwdFocus] = useState(false);
 
   const nameRegExp = /^[a-zA-Zçéèêëàâîïôùû' -]{2,25}$/;
@@ -42,24 +49,35 @@ export default function ProfileForm() {
   }, [firstname, lastname, password, confirmPwd]);
 
   useEffect(() => {
-    let ignore = false;
-    if ((response && !ignore) || (updateRes && !ignore)) {
-      setInputs({ firstname: response.firstname, lastname: response.lastname, password: "", confirmPwd: "", oldPassword: "" });
+    if (updateRes) {
+      setInputs({ firstname, lastname, password: "", confirmPwd: "", oldPassword: "" });
       setValidInputs({ firstname: true, lastname: true, password: false, confirmpwd: false });
-      if (updateRes && !ignore) {
-        toast.success("Profil modifié !");
-      } 
-    } else if ((deleteRes && !ignore) || (deactivateRes && !ignore)) {
+      toast.success("Profil modifié !");
+    }
+  }, [updateRes]);
+
+  useEffect(() => {
+    if (deleteRes) {
+      toast.success("Profil supprimé !");
       setInputs({ firstname: "", lastname: "", password: "", confirmPwd: "", oldPassword: "" });
       setTimeout(() => { navigate("/signup") }, 1000);
-      if (deleteRes && !ignore) {
-        toast.success("Profil supprimé !");
-      } else if (deactivateRes && !ignore) {
-        toast.success("Profil désactivé !");
-      }
     }
-    return () => { ignore = true };
-  }, [response, updateRes, deleteRes, deactivateRes]);
+  }, [deleteRes]);
+
+  useEffect(() => {
+    if (deactivateRes) {
+      toast.success("Profil désactivé !");
+      setInputs({ firstname: "", lastname: "", password: "", confirmPwd: "", oldPassword: "" });
+      setTimeout(() => { navigate("/signup") }, 1000);
+    }
+  }, [deactivateRes]);
+
+  useEffect(() => {
+    if (response ) {
+      setInputs({ firstname: response.firstname, lastname: response.lastname, password: "", confirmPwd: "", oldPassword: "" });
+      setValidInputs({ firstname: true, lastname: true, password: false, confirmpwd: false });
+    } 
+  }, [response]);
 
   useEffect(() => {
     let ignore = false;
@@ -83,6 +101,9 @@ export default function ProfileForm() {
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
     updateUser(updateAxiosFetch, firstname, lastname, oldPassword, password);
+    setShowConfirmPwd(false);
+    setShowOldPwd(false);
+    setShowPwd(false);
   };
 
   const handleDelete = async () => {
@@ -155,57 +176,108 @@ export default function ProfileForm() {
 
         <h2>Changer mon mot de passe :</h2>
 
-        <label htmlFor="oldPassword">
-          Ancien mot de passe :
+        <div className="labelAndInputContainer passwordLabelAndInput">
+          <label htmlFor="oldPassword"> Ancien mot de passe :</label>
+          <div className="pwdContainer">
           <input
-            type="password"
+            type={showOldPwd ? "text" : "password"}
             id="oldPassword"
             value={oldPassword}
+            autoComplete="off"
             onChange={(e) => {
               setInputs((prevInputs) => ({...prevInputs, oldPassword: e.target.value}));
             }}
             placeholder="Votre mot de passe actuel"
-            onFocus={() => setOldPasswordFocus(true)}
-            onBlur={() => setOldPasswordFocus(false)}
-          />
-        </label>
+            onFocus={() => setOldPwdFocus(true)}
+            onBlur={() => setOldPwdFocus(false)}
+            />
+            <button type="button" className="showPwd" onClick={() => setShowOldPwd(!showOldPwd)}>
+              {!showOldPwd ? <FaEye /> : <FaEyeSlash />}
+            </button>
+            </div>
+          </div>
+        
+          <div className="labelAndInputContainer passwordLabelAndInput">
+          <label htmlFor="password">
+            Mot de passe :
+            <span className={validPassword ? "valid" : "hide"}>
+              <FaCheck />
+            </span>
+            <span className={validPassword || !password ? "hide" : "invalid"}>
+              <FaTimes />
+              </span>
+          </label>
+          <div className="pwdContainer">
+            <input
+              type={showPwd ? "text" : "password"}
+              id="password"
+              name="password"
+              value={password}
+              autoComplete="off"
+              onChange={(e) => {
+                setInputs((prevInputs) => ({
+                  ...prevInputs,
+                  [e.target.name]: e.target.value,
+                }));
+                setValidInputs((prevValidInputs) => ({
+                  ...prevValidInputs,
+                  [e.target.name]: passwordRegExp.test(e.target.value),
+                }));
+              }}
+              placeholder="Votre mot de passe"
+              aria-invalid={validPassword ? "false" : "true"}
+              aria-describedby="passwordidnote"
+              onFocus={() => setPasswordFocus(true)}
+              onBlur={() => setPasswordFocus(false)}
+            />
+            <button type="button" className="showPwd" onClick={() => setShowPwd(!showPwd)}>
+              {!showPwd ? <FaEye /> : <FaEyeSlash />}
+            </button>
+          </div>
+        </div>
+        <p
+          id="passwordidnote"
+          className={
+            passwordFocus && password  && !validPassword// focus is on input & input is not valid , here we want the instructions even if input is empty (if focused)
+              ? "instructions" // then show instructions with css styling
+              : "offscreen" // or dont show it with css styling
+          }
+        >
+          <FaInfoCircle /> 8 à 24 caractères, incluant un chiffre, une lettre minuscule et majuscule
+        </p>
 
-        <InputField
-          type="password"
-          name="password"
-          label="Nouveau mot de passe :"
-          placeholder="Nouveau mot de passe"
-          regExp={passwordRegExp}
-          inputDescription="8 à 24 caractères, incluant un chiffre, une lettre minuscule et majuscule"
-          inputs={inputs}
-          setInputs={setInputs}
-          validInputs={validInputs}
-          setValidInputs={setValidInputs}
-        />
-
-        <label htmlFor="confirmPassword">
-          Confirmez le nouveau
-          <br /> mot de passe :
-          <span className={confirmPwd === password && validPassword ? "valid" : "hide"}>
-            <FaCheck />
-          </span>
-          <span className={(confirmPwd === password && validPassword) || !confirmPwd ? "hide" : "invalid"}>
-            <FaTimes />
-          </span>
-          <input
-            type="password"
-            id="confirmPassword"
-            value={confirmPwd}
-            onChange={(e) => {
-              setInputs((prevInputs) => ({...prevInputs, confirmPwd: e.target.value}));
-            }}
-            placeholder="confirmez le mot de passe"
-            aria-invalid={confirmPwd === password ? "false" : "true"}
-            aria-describedby="confirmpwidnote"
-            onFocus={() => setConfirmPwdFocus(true)}
-            onBlur={() => setConfirmPwdFocus(false)}
-          />
-        </label>
+        <div className="labelAndInputContainer passwordLabelAndInput">
+          <label htmlFor="confirmPassword">
+            Confirmez le
+            {width > 992 ? <br /> : " "}
+            nouveau mot de passe :
+            <span className={confirmPwd === password && validPassword ? "valid" : "hide"}>
+              <FaCheck />
+            </span>
+            <span className={(confirmPwd === password && validPassword) || !confirmPwd ? "hide" : "invalid"}>
+              <FaTimes />
+            </span>
+          </label>
+          <div className="pwdContainer">
+            <input
+              type={showConfirmPwd ? "text" : "password"}
+              id="confirmPassword"
+              value={confirmPwd}
+              autoComplete="off"
+              onChange={(e) => {
+                setInputs((prevInputs) => ({...prevInputs, confirmPwd: e.target.value}));
+              }}
+              placeholder="Confirmez le mot de passe"
+              aria-invalid={confirmPwd === password ? "false" : "true"}
+              aria-describedby="confirmpwidnote"
+              onFocus={() => setConfirmPwdFocus(true)}
+              onBlur={() => setConfirmPwdFocus(false)}
+            />
+            <button type="button" className="showPwd" onClick={() => setShowConfirmPwd(!showConfirmPwd)}>
+              {!showConfirmPwd ? <FaEye /> : <FaEyeSlash />}
+            </button>
+          </div>
+        </div>
         <p
           id="confirmpwidnote"
           className={confirmPwdFocus && confirmPwd !== password ? "instructions" : "offscreen"}>

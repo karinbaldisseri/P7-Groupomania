@@ -3,10 +3,10 @@
 .createPostForm {
   align-items: flex-start;
   background: $white-color;
+  width: 100%;
   max-width: 600px;
   margin: 20px 0;
   padding: 20px;
-  width: 100%;
   border-radius: 10px;
   .createPostHeader {
     display: flex;
@@ -27,9 +27,6 @@
       margin: 5px 0 10px 0;
       padding: 5px 15px;
     }
-    /* .hide {
-      display:none;
-    } */
     .previewImgContainer {
       position: relative;
       margin: 0 0 0 20px; // ne pas changer
@@ -49,15 +46,29 @@
         height: fit-content;
         min-width: 120px;
         font-size: 13px;
-        border-radius: 10px;
         margin: 5px 0 0 0;
         padding: 7px 10px;
+        border-radius: 10px;
+        @include mobiles {
+          min-width: 90px;
+          svg {
+            width: 18px;
+            height: 18px;
+          }
+        }
       }
       #imgBtn {
         background-color: $border-color;
+        @include mobiles {
+          padding: 5px 8px;
+          svg {
+            height: 22px;
+            width: 22px;
+          }
+        }
       }
       #hide {
-        display: none; // ne pas changer
+        display: none;
       }
       .deleteImgUrl{
         position: absolute;
@@ -66,12 +77,6 @@
         background: rgba(255, 255, 255,0.5);
         cursor: pointer;
       }
-      /* .disabled {
-        cursor: default;
-          &:hover {
-            opacity: 0.5;
-          }
-      } */
     }
   }
 }

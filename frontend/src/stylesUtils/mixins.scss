@@ -8,8 +8,25 @@
   align-items: center;
 }
 
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 @mixin shadow {
-  box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.20);
+  box-shadow: 1px 1px 4px 4px rgba(0, 0, 0, 0.15);
+}
+
+@mixin input-border {
+  border: 2px solid rgb(233, 233, 233);
+  border-radius: 10px;
+}
+
+@mixin focus-border {
+  outline: 3px solid $secondary-color;
+  border: none;
 }
 
 // media queries
