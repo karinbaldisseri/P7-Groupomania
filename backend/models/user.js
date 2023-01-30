@@ -43,9 +43,6 @@ const User = dbSequelize.define('user', {
     get() {
       return `${this.firstname} ${this.lastname}`;
     },
-    /* set(value) {
-      throw new Error('Do not try to set the "username" value !');
-    } */
   }
 });
 
@@ -66,18 +63,5 @@ User.hasMany(Like, {
   onDelete: "CASCADE"
 });
 Like.belongsTo(User);
-
-/* User.sync({ alter: true })
-  .then(() => {
-    return User.create({
-      email: "admin@me.com",
-      firstname: "ad",
-      lastName: "min1",
-      password: "Admin1abc",
-      isAdmin: true
-    });
-  })
-  .then(() => console.log("Admin added to Database"))
-  .catch((error) => console.log(error)); */
 
 module.exports = User;

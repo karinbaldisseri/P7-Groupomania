@@ -11,7 +11,6 @@ router.post('/signup', emailValidation ,passwordValidation, userController.signu
 router.post('/login', userController.login);
 router.put('/me/deactivate', auth, userController.deactivateUser);
 router.get('/me', auth, userController.getOneUser);
-// router.get('/users', auth, userController.getAllUsers);
 router.put('/me', auth, passwordValidation, userController.modifyUser);
 router.delete('/me', auth, userController.deleteUser);
 

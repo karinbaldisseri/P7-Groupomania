@@ -1,5 +1,4 @@
 const { Op } = require('sequelize');
-// const paginate = require('../middlewares/paginate');
 const Comment = require('../models/comment');
 const Post = require('../models/post');
 const User = require('../models/user');
@@ -76,11 +75,6 @@ exports.getAllCommentsByPost = (req, res) => {
         }) 
         .catch(() => res.status(500).json({ error : 'Internal server error' }));
 }
-
-/* exports.getAllComments = (req, res) => {
-    paginatedComments = paginate.paginatedResults(Comment);
-    return res.status(200).json(paginatedComments);
-}; */
 
 // UPDATE Comment -> PUT
 exports.modifyComment = (req, res) => {

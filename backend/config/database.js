@@ -7,9 +7,3 @@ module.exports = new Sequelize(`${process.env.DB_CONNECTION_NAME}`, `${process.e
   dialect: 'mysql',
   },
 );
-
-/* module.exports = new Sequelize('groupomania', 'groupomaniauser', 'Mskb1204inka!', {
-  host: 'localhost',  
-  dialect: 'mysql',
-  },
-); */

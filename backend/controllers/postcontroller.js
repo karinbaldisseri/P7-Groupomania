@@ -1,9 +1,6 @@
 const fs = require('fs');
-// const paginate = require('../middlewares/paginate');
 const Post = require('../models/post');
 const User = require('../models/user');
-const Comment = require('../models/comment');
-const Like = require('../models/like');
 
 
 // CREATE new post -> POST
@@ -54,14 +51,13 @@ exports.getAllPosts = (req, res) => {
     let limit = parseInt(req.query.limit);
 
     if (!limit || !Number.isFinite(limit) || limit <= 0 || limit > 50) {
-        limit = 6; // changed to 6 instead of 10
+        limit = 6;
     }
     if (!page || !Number.isFinite(page) || page <= 0) {
         page = 1;
     }
         
     Post.findAndCountAll({
-        // distinct: true,
         include: [{ model: User, required: true, where: { isActive: true }, attributes: ['id', 'firstname', 'lastname', 'username'] }],
         // to be able to use/ get virtual field 'username' (included in query), you have to add the attributes related to it (firstname + lastname)
         order: [['createdAt', 'DESC']],

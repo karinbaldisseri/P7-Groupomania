@@ -43,7 +43,6 @@ exports.signup = (req, res) => {
 
 // LOGIN
 exports.login = (req, res) => {
-    //if (req.body.email !== null && req.body.password !== null) {
     if (req.body.email && req.body.password) {
         const cryptoJsEmail = cryptojs.HmacSHA256(req.body.email, `${process.env.CRYPTOJS_EMAIL_KEY}`).toString();
         User.findOne({ attributes: ['id','email','password','isActive', 'isAdmin'], where: { email: cryptoJsEmail }})

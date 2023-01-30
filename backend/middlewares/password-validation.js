@@ -24,7 +24,6 @@ module.exports = (req, res, next) => {
             res.status(400).json({ error: `Please reinforce the password : ${passwordSchema.validate(password, { list: true })}` });
         }
     } else {
-        //res.status(400).json({error: 'Please add a password !'})
         next();
     }
 };
