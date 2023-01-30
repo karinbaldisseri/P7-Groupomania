@@ -18,16 +18,32 @@ function Likes({ postId }) {
   const [dislikesCount, setDislikesCount] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
+  const effectRan = useRef(false);
 
   const [likeCountRes, likeCountErr, likeCountLoad, likeCountAxiosFetch] = useAxiosFetchFunction();
   const [commCountRes, commCountErr, commCountLoad, commCountAxiosFetch] = useAxiosFetchFunction();
   const [likeRes, likeErr, likeLoad, likeAxiosFetch] = useAxiosFetchFunction();
   const [voteRes, voteErr, voteLoad, voteAxiosFetch] = useAxiosFetchFunction();
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    getLikeCount(likeCountAxiosFetch, postId);
-    getCommentsCount(commCountAxiosFetch, postId);
-    getLikeByPostByUser(likeAxiosFetch, postId);
+    if (effectRan.current === false) {
+      const fetchLikeCount = async () => {
+        await getLikeCount(likeCountAxiosFetch, postId);
+      };
+      fetchLikeCount();
+      const fetchCommentCount = async () => {
+        await getCommentsCount(commCountAxiosFetch, postId);
+      };
+      fetchCommentCount();
+      const fetchLike = async () => {
+        await getLikeByPostByUser(likeAxiosFetch, postId);
+      };
+      fetchLike();
+      return () => {
+        effectRan.current = true;
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -79,7 +95,7 @@ function Likes({ postId }) {
       setDislikesCount((dislikes) => dislikes - 1);
       setIsDisliked(false);
     }
-    addOrRemoveLike(voteAxiosFetch, postId, vote);
+    await addOrRemoveLike(voteAxiosFetch, postId, vote);
   };
 
   const handleDislike = async () => {
@@ -99,7 +115,7 @@ function Likes({ postId }) {
       setLikesCount((likes) => likes - 1);
       setIsLiked(false);
     }
-    addOrRemoveLike(voteAxiosFetch, postId, vote);
+    await addOrRemoveLike(voteAxiosFetch, postId, vote);
   };
 
   return (

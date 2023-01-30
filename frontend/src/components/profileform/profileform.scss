@@ -50,6 +50,9 @@
   background: rgba(0, 0, 0, 0.65);
   .react-confirm-alert-body {
     width: 500px;
+    @include mobiles {
+      width: 300px;
+    }
     h1 {
       margin-bottom: 15px;
     }

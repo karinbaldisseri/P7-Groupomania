@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
@@ -17,6 +18,7 @@ function CreatePostForm({ onCreate }) {
   const [errMsg, setErrMsg] = useState("");
   const errRef = useRef();
   const fileInput = useRef(null);
+  const effectRan = useRef(false);
 
   const [response, fetchError, loading, axiosFetch] = useAxiosFetchFunction();
   const [userRes, userErr, userLoad, userAxiosFetch] = useAxiosFetchFunction();
@@ -25,12 +27,20 @@ function CreatePostForm({ onCreate }) {
     setErrMsg("");
   }, [postText, imageUrl]);
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    getOneUser(userAxiosFetch);
-    if (userErr) {
-      setErrMsg(userErr);
+    if (effectRan.current === false) {
+      const fetchData = async () => {
+        await getOneUser(userAxiosFetch);
+      };
+      fetchData();
+      if (userErr) {
+        setErrMsg(userErr);
+      }
+      return () => {
+        effectRan.current = true;
+      };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -40,7 +50,6 @@ function CreatePostForm({ onCreate }) {
     ) {
       onCreate(response);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
   const handleSubmit = async (e) => {
@@ -54,7 +63,7 @@ function CreatePostForm({ onCreate }) {
       // imageUrl = used for useState / "image" = name used in multer => module.exports = multer({ storage }).single('image');
       postData.append("image", imageUrl);
     }
-    createPost(axiosFetch, postData);
+    await createPost(axiosFetch, postData);
     if (fetchError) {
       setErrMsg(fetchError);
     } else if (response) {

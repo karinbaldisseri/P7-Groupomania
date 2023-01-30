@@ -35,17 +35,15 @@ function LoginForm() {
   }, [email, password]);
 
   useEffect(() => {
-    // let ignore = false;
-    if (response /* && !ignore */) {
+    if (response) {
       setEmail("");
       setPassword("");
       setAuth({ token: response?.token, userId: response?.userId, isAdmin: response?.isAdmin });
       navigate(from, { replace: true });
-    } else if (fetchError /* && !ignore */) {
+    } else if (fetchError) {
       setErrMsg(fetchError);
       errRef.current.focus();
     }
-    // return () => { ignore = true };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response, fetchError]);
 
@@ -57,7 +55,7 @@ function LoginForm() {
       );
       return;
     }
-    loginUser(axiosFetch, email, password);
+    await loginUser(axiosFetch, email, password);
     setShowPwd(false);
     setErrMsg(fetchError);
   };

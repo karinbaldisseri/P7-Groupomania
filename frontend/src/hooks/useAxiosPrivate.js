@@ -21,8 +21,7 @@ const useAxiosPrivate = () => {
     const responseIntercept = axiosPrivate.interceptors.response.use(
       (response) => response,
       (error) => {
-        const { status /* , data, config */ } = error.response;
-        //  == error?.response?.status === 400
+        const { status } = error.response;
         if (status === 500 || !error?.response) {
           // possible d'envoyer un toast depuis intercepteur
           toast.error("Erreur interne du serveur");
@@ -40,14 +39,6 @@ const useAxiosPrivate = () => {
         } else {
           error.response.statusText = "Erreur... Veuillez réessayer svp !";
         }
-        /* else (
-          status === 400 &&
-          config.method === "get" &&
-          // eslint-disable-next-line no-prototype-builtins
-          data.errors.hasOwnProperty("id")
-        ) {
-          toast.error("Autre erreur");
-        } */
         return Promise.reject(error);
       }
     );

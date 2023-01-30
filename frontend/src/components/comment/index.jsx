@@ -42,7 +42,7 @@ function Comment({ comment, onDelete, onUpdate }) {
     if (!content) {
       setErrMsg("Merci d'inclure du texte");
     } else if (auth.userId === comment.userId || auth.isAdmin) {
-      updateComment(updateCommAxiosFetch, comment.postId, comment.id, content);
+      await updateComment(updateCommAxiosFetch, comment.postId, comment.id, content);
       onUpdate(comment.id, content);
       if (updateCommErr && !updateCommRes) {
         setErrMsg(updateCommErr);
@@ -52,9 +52,9 @@ function Comment({ comment, onDelete, onUpdate }) {
     setErrMsg("");
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (auth.userId === comment.userId || auth.isAdmin) {
-      deleteComment(deleteCommAxiosFetch, comment.postId, comment.id);
+      await deleteComment(deleteCommAxiosFetch, comment.postId, comment.id);
       onDelete(comment.id);
       if (deleteCommErr && !deleteCommRes) {
         setErrMsg(deleteCommErr);

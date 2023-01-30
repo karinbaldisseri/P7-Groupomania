@@ -64,7 +64,7 @@ export default function SignupForm() {
     };
   }, [fetchError]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // security in case button is enabled with JS hack
     if (
@@ -79,11 +79,10 @@ export default function SignupForm() {
       );
       return;
     }
-    createUser(axiosFetch, firstname, lastname, email, password);
+    await createUser(axiosFetch, firstname, lastname, email, password);
     setShowPwd(false);
     setShowConfirmPwd(false);
-    // redirect to login after toast shown
-    setTimeout(() => { navigate("/signup") }, 1000);
+    setTimeout(() => { navigate("/login") }, 1000);
   };
 
   return (
@@ -239,9 +238,9 @@ export default function SignupForm() {
         <p
           id="confirmpwdidnote"
           className={
-            confirmPwdFocus && confirmPwd !== password // focus is on input & input is not valid , here we want the instructions even if input is empty (if focused)
-              ? "instructions" // then show instructions with css styling
-              : "offscreen" // or dont show it with css styling
+            confirmPwdFocus && confirmPwd !== password
+              ? "instructions"
+              : "offscreen"
           }
         >
           <FaInfoCircle /> Doit être identique au mot de passe saisi ci-dessus

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FaUserCircle, FaEllipsisH, FaPen, FaTrashAlt } from "react-icons/fa";
 import moment from "moment/min/moment-with-locales";
 import { useState, useRef, useEffect } from "react";
@@ -30,7 +31,6 @@ function Post({ post, onDelete, onUpdate }) {
   useEffect(() => {
     setContent(post.content);
     setImageUrl(post.imageUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post.content, post.imageUrl]);
 
   useEffect(() => {
@@ -47,12 +47,11 @@ function Post({ post, onDelete, onUpdate }) {
     return () => {
       ignore = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response, fetchError]);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (post.userId === auth.userId || auth.isAdmin) {
-      deletePost(axiosFetch, post.id);
+      await deletePost(axiosFetch, post.id);
     }
   };
 
@@ -73,6 +72,15 @@ function Post({ post, onDelete, onUpdate }) {
     setTrigger(false);
   };
 
+  const handleToggleTrigger = () => {
+    setTrigger(!trigger);
+    setContent(post.content);
+    setImageUrl(post.imageUrl);
+    if (trigger) {
+      setOpen(false);
+    }
+  };
+
   return (
     <article key={post.id} className="postContainer">
       <p
@@ -84,7 +92,12 @@ function Post({ post, onDelete, onUpdate }) {
       </p>
       {loading && <p className="loading">Chargement en cours...</p>}
 
-      <div className={!post.imageUrl ? "borderBottom" : undefined}>
+      <div
+        className={
+          // eslint-disable-next-line no-nested-ternary
+          post.imageUrl ? undefined : !trigger ? "borderBottom" : undefined
+        }
+      >
         <div className="postHeader">
           <div className="userInfoContainer">
             <FaUserCircle fill="lightgrey" className="userIcon" />
@@ -99,18 +112,13 @@ function Post({ post, onDelete, onUpdate }) {
               auth.userId === post.userId || auth.isAdmin ? "dotsIcon" : "hide"
             }
             title="Actions : cliquez pour montrer ou cacher "
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+            }}
           />
           {open && (
             <div className="dropDownMenu">
-              <button
-                type="button"
-                onClick={() => {
-                  setTrigger(!trigger);
-                  setContent(post.content);
-                  setImageUrl(post.imageUrl);
-                }}
-              >
+              <button type="button" onClick={handleToggleTrigger}>
                 <FaPen fill="grey" className="dropDownIcon" />
                 {width > 768 ? "Modifier" : ""}
               </button>

@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaSignOutAlt, FaUserCircle, FaNewspaper } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import RedLogo from "../../assets/icon-red.png";
@@ -8,10 +8,11 @@ import "./header.scss";
 export default function Header() {
   const { setAuth } = useAuth();
   const { width } = useWindowSize();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     setAuth("");
-    window.location = "/"; // replace navigate dont use window.location
+    navigate("/");
   };
 
   return (

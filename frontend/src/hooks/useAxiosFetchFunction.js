@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-// import axios from "../api/axios";
 import useAxiosPrivate from "./useAxiosPrivate";
 
 const useAxiosFetchFunction = () => {
@@ -10,15 +9,13 @@ const useAxiosFetchFunction = () => {
   const [controller, setController] = useState();
 
   const axiosFetch = async (configObj) => {
-    const { /* axiosInstance, */ url, method, requestConfig = {} } = configObj;
+    const { url, method, requestConfig = {} } = configObj;
 
     try {
       setLoading(true);
       const ctrl = new AbortController();
       setController(ctrl);
-      // const res = await axios({
       const res = await axiosPrivate({
-        // axiosInstance,
         url,
         method: method.toLowerCase(),
         ...requestConfig,

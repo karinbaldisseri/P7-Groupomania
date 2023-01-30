@@ -22,28 +22,26 @@ function CommentsFeed({ postId, setCommentsCount }) {
   const [commentsResponse, commentsError, commentsLoading, commentsAxiosFetch] = useAxiosFetchFunction();
   const [createCommRes, createCommErr, createCommLoad, createCommAxiosFetch] = useAxiosFetchFunction();
 
+  // eslint-disable-next-line consistent-return
   useEffect(() => {
     focusRef.current.focus();
-    if (effectRan.current === true) {
-    /* let ignore = false;
-    if (!ignore) { */
-      getCommentsByPost(commentsAxiosFetch, postId, page);
+    if (effectRan.current === false) {
+      const fetchData = async () => {
+        await getCommentsByPost(commentsAxiosFetch, postId, page);
+      };
+      fetchData();
       if (commentsError) {
         setErrMsg(commentsError);
       } else {
         setErrMsg("");
       }
+       return () => {
+        effectRan.current = true;
+      };
     }
-    // return () => { ignore = true };
-    return () => {
-      effectRan.current = true;
-    };
   }, []);
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    // let ignore = false;
-    // if (!ignore && commentsResponse !==null && !commentsResponse.message) {
     if (effectRan.current === true && commentsResponse !== null && !commentsResponse.message) {
       if (!comments) {
         setComments(commentsResponse.items);
@@ -52,14 +50,12 @@ function CommentsFeed({ postId, setCommentsCount }) {
       }
       setPage(commentsResponse.nextPage);
     }
-    // return () => { ignore = true };
     return () => {
       effectRan.current = true;
     };
   }, [commentsResponse]);
 
   useEffect(() => {
-    // if (createCommRes.length > 0 || Object.keys(createCommRes).length !== 0) {
     if (createCommRes) {
       if (!comments) {
         setComments([createCommRes]);
@@ -74,7 +70,7 @@ function CommentsFeed({ postId, setCommentsCount }) {
     if (!commentText) {
       setErrMsg("Merci d'inclure du texte dans votre commentaire");
     }
-    createComment(createCommAxiosFetch, postId, commentText);
+    await createComment(createCommAxiosFetch, postId, commentText);
     setCommentsCount((prev) => prev + 1);
     toast.success("Nouveau commentaire crée !");
     setCommentText("");
@@ -86,7 +82,7 @@ function CommentsFeed({ postId, setCommentsCount }) {
   const handleDelete = (commentId) => {
     if (comments.length === 1) {
       setCommentsCount(0);
-      setComments(undefined); // valeur de comments et commentsResponse.items si vide = undefined
+      setComments(undefined);
     } else {
       setCommentsCount((prev) => prev - 1);
       setComments(comments.filter((comm) => comm.id !== commentId));
@@ -106,8 +102,8 @@ function CommentsFeed({ postId, setCommentsCount }) {
     toast.success("Commentaire modifié");
   };
 
-  const handleCharge = () => {
-    getCommentsByPost(commentsAxiosFetch, postId, page);
+  const handleCharge = async () => {
+    await getCommentsByPost(commentsAxiosFetch, postId, page);
   }
 
   return (

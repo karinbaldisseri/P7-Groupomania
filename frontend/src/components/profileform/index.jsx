@@ -95,19 +95,22 @@ export default function ProfileForm() {
   }, [fetchError, updateErr, deleteErr]);
 
   useEffect(() => {
-    getOneUser(axiosFetch);
+    const fetchData = async () => {
+      await getOneUser(axiosFetch);
+    };
+    fetchData();
   }, []);
 
   const handleSubmitUpdate = async (e) => {
     e.preventDefault();
-    updateUser(updateAxiosFetch, firstname, lastname, oldPassword, password);
+    await updateUser(updateAxiosFetch, firstname, lastname, oldPassword, password);
     setShowConfirmPwd(false);
     setShowOldPwd(false);
     setShowPwd(false);
   };
 
   const handleDelete = async () => {
-    deleteUser(deleteAxiosFetch);
+    await deleteUser(deleteAxiosFetch);
   };
 
   const confirmDelete = () => {
@@ -124,7 +127,7 @@ export default function ProfileForm() {
 
   const handleDeactivate = async () => {
     if (auth.token || auth.isAdmin) {
-      deactivateUser(deactivateAxiosFetch);
+      await deactivateUser(deactivateAxiosFetch);
     }
   };
 
@@ -238,9 +241,9 @@ export default function ProfileForm() {
         <p
           id="passwordidnote"
           className={
-            passwordFocus && password  && !validPassword// focus is on input & input is not valid , here we want the instructions even if input is empty (if focused)
-              ? "instructions" // then show instructions with css styling
-              : "offscreen" // or dont show it with css styling
+            passwordFocus && password  && !validPassword
+              ? "instructions"
+              : "offscreen"
           }
         >
           <FaInfoCircle /> 8 à 24 caractères, incluant un chiffre, une lettre minuscule et majuscule

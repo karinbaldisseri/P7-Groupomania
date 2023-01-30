@@ -34,6 +34,9 @@
         textarea, .content {
           margin: 0;
           height: 30px;
+          &::placeholder {
+            transform: translateY(-2px);
+          }
         }
         .sendCommentBtn {
           height: 26px;
@@ -63,6 +66,7 @@
   }
   .commentForm {
     margin: 5px 0;
+    align-items: center;
     .userIcon {
       height: 28px;
       width: 28px;

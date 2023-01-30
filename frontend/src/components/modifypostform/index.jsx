@@ -60,7 +60,7 @@ function ModifyPostForm({ content, setContent, imageUrl, setImageUrl, postUserId
       if (deleteImage && !updatedImage) {
         data.append("currentImage", "none");
       }
-      updatePost(axiosFetch, postId, data);
+      await updatePost(axiosFetch, postId, data);
     }
   };
 

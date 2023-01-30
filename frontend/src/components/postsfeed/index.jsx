@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRef, useState, useEffect } from "react";
 import useAxiosFetchFunction from "../../hooks/useAxiosFetchFunction";
 import CreatePostForm from "../createpostForm";
@@ -6,7 +7,7 @@ import "./postsfeed.scss";
 import { getAllPosts } from "../../api/calls/postcalls";
 
 function PostsFeed() {
-  const [posts, setPosts] = useState(undefined); // []
+  const [posts, setPosts] = useState(undefined);
   const [page, setPage] = useState(1);
   const errRef = useRef();
   const effectRan = useRef(false);
@@ -14,20 +15,17 @@ function PostsFeed() {
   const [response, fetchError, loading, axiosFetch] = useAxiosFetchFunction();
 
   useEffect(() => {
-    // if (effectRan.current === false) {
     if (effectRan.current === true) {
-      getAllPosts(axiosFetch, page);
-      // return () => {
-      // effectRan.current = true;
-      // };
+      const fetchData = async () => {
+        await getAllPosts(axiosFetch, page);
+      };
+      fetchData();
     }
     return () => {
       effectRan.current = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]); //  page
+  }, [page]);
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
     if (response) {
       if (!posts) {
@@ -36,8 +34,7 @@ function PostsFeed() {
         setPosts((prev) => [...prev, ...response.items]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [response]); // response
+  }, [response]);
 
   useEffect(() => {
     const handleScroll = (e) => {
@@ -55,7 +52,6 @@ function PostsFeed() {
 
     // clean up
     return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response, page]);
 
   const handleCreate = (newPost) => {

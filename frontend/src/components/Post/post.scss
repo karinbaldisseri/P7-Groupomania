@@ -24,6 +24,9 @@
       background-color: $background-primary;
       border-bottom: 1px solid rgb(226, 220, 220);
       border-top: 1px solid rgb(226, 220, 220);
+      @include mobiles {
+        max-height: 300px;
+      }
     }
     .postHeader {
       display: flex;
