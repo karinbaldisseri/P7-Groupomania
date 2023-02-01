@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 const dbSequelize = require('./config/database');
+const cookieParser = require('cookie-parser');
 
 const userRoutes = require('./routes/userroutes');
 const postRoutes = require('./routes/postroutes');
@@ -16,7 +17,7 @@ const app = express();
 dbSequelize.authenticate()
   .then(() => {
     console.log("Connection to database successful !")
-    dbSequelize.sync(/* { alter: true } */)
+    dbSequelize.sync({ /* force: true  */})
       .then(console.log('Database synced !'))
       .catch(error => console.log(error))
   })
@@ -35,11 +36,16 @@ app.use(helmet());
 
 // Express-rate-limit - Protects from brute force type attacks 
 app.use(limiter);
+
 // Sécurité CORS (Cross-origin resource sharing) -  Prevents from Cors attacks
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
+
+// middleware for cookies
+app.use(cookieParser());
+
 // add specific headers to allow controlled acces between different origins / servers
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');

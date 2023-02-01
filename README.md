@@ -33,7 +33,7 @@ Lien github de la partie front-end : LIEN GITHUB FRONTEND à télécharger afin 
 Ensuite, positinnez-vous dans le dossier frontend et exécutez la commande :
 `npm install`
 pour installer les packages requis pour le fonctionnement du frontend et ensuite exécutez la commande:
-`npm run start`
+`npm run dev`
 pour démarrer le serveur du frontend -- Port 4200
 
 

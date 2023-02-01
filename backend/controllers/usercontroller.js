@@ -1,11 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cryptojs = require('crypto-js');
-const { Op } = require('sequelize');
 const User = require('../models/user');
-const Like = require('../models/like');
-const Post = require('../models/post');
-
 
 // SIGNUP
 exports.signup = (req, res) => {
@@ -59,18 +55,29 @@ exports.login = (req, res) => {
                             if (!validPassword) {
                                 return res.status(401).json({ message: 'Invalid user and/or Password !' })
                             } else {
-                                res.status(200).json({
-                                    // Create token
+                                const refreshToken = jwt.sign({
                                     userId: user.id,
-                                    isAdmin: user.isAdmin,
-                                    token: jwt.sign({
+                                    isAdmin: user.isAdmin
+                                },
+                                    `${process.env.JWT_REFRESHTOKEN}`,
+                                    { expiresIn: '1d' });
+                                User.update({ refreshToken: refreshToken }, { where: { email: cryptoJsEmail } })
+                                    .then(() => {
+                                        res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 *1000});
+                                        res.status(200).json({
+                                        // Create token
                                         userId: user.id,
-                                        isAdmin: user.isAdmin
-                                        },
-                                        `${process.env.JWT_TOKEN}`,
-                                        { expiresIn: '24h' } 
-                                    )
-                                });
+                                        isAdmin: user.isAdmin,
+                                        token: jwt.sign({
+                                            userId: user.id,
+                                            isAdmin: user.isAdmin
+                                            },
+                                            `${process.env.JWT_TOKEN}`,
+                                            { expiresIn: '30s' } 
+                                            )
+                                        });
+                                    })
+                                    .catch(() => res.status(500).json({ error: 'Internal server error' }));
                             }
                         })
                     .catch(() => res.status(500).json({ error: 'Internal server error' }));
@@ -79,6 +86,64 @@ exports.login = (req, res) => {
             .catch(()=> res.status(500).json({ error: 'Internal server error' }));
     } else {
         return res.status(400).json({ error: 'Client input error' });
+    }
+};
+
+// handle REFRESHTOKEN
+exports.handleRefreshToken = (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) {
+        return res.status(401).json({ error: 'Unauthorized request !' });
+    } else {
+        const refreshTokn = cookies.jwt;
+        User.findOne({ where: { refreshToken: refreshTokn } })
+            .then((user) => {
+                if (!user) {
+                    return res.status(400).json({ message: 'Invalid User and/or password !' });
+                } else if (user.isActive === false) {
+                    return res.status(403).json({ message: 'Account deactivated ! Please contact your admin.' });
+                } else {
+                    const decodedToken = jwt.verify(refreshTokn, process.env.JWT_REFRESHTOKEN);
+                    res.status(200).json({
+                        userId: decodedToken.userId,
+                        isAdmin: decodedToken.isAdmin,
+                        token: jwt.sign({
+                            userId: decodedToken.userId,
+                            isAdmin: decodedToken.isAdmin
+                            },
+                            `${process.env.JWT_TOKEN}`,
+                            { expiresIn: '30s' } 
+                        )
+                    });
+                }
+            })
+        .catch(()=> res.status(401).json({ error: "Expired RefreshToken" }));
+    }
+}
+
+// LOGOUT USER
+exports.logout = (req, res) => {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) {
+        return res.status(204).json({ message: 'No content !' });
+    } else {
+        const refreshTokn = cookies.jwt;
+        User.findOne({ where: { refreshToken: refreshTokn } })
+            .then((user) => {
+                if (!user) {
+                    // clear cookie => needs the same otions as when you create cookie apart from maxAge
+                    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+                    return res.status(204).json({ message: 'No content !' });
+                } else {
+                    // delete refreshToken in DB
+                    User.update({ refreshToken: null }, { where: { refreshToken: refreshTokn } })
+                        .then(() => res.status(200).json({ message: "User logged out !" }))
+                        .catch(() => res.status(500).json({ error: 'Internal server error' }));
+                    //clear cookie
+                    res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+                }
+            })
+            .catch(()=> res.status(500).json({ error: 'Internal server error' }));
     }
 };
 
@@ -120,8 +185,6 @@ exports.modifyUser = (req, res) => {
                                 bcrypt.hash(userData.newPassword, 10)
                                     .then(hash => {
                                         delete userData.oldPassword;
-                                        console.log("USERDATA");
-                                        console.log(userData);
                                         // if use id as params in url => check id = id in url & id in auth
                                         //User.update({ ...userData, password: hash }, { where: { id: req.params.id, id: req.auth.userId } })
                                         User.update({ ...userData, password: hash }, { where: { id: req.auth.userId } })

@@ -11,7 +11,7 @@ import "../signupform/forms.scss";
 import "./loginform.scss";
 
 function LoginForm() {
-  const { setAuth } = useAuth();
+  const { setAuth, persist, setPersist } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/postswall"; // get where the user came from
@@ -59,6 +59,10 @@ function LoginForm() {
     setShowPwd(false);
     setErrMsg(fetchError);
   };
+
+  useEffect(() => {
+    localStorage.setItem("persist", persist);
+  }, [persist])
 
   return (
     <article className="formContainer">
@@ -115,6 +119,10 @@ function LoginForm() {
         >
           Me connecter
         </button>
+        <div className="checkbox">
+          <input type="checkbox" id="persist" onChange={() => setPersist(!persist)} checked={persist} />
+          <label htmlFor="persist">Appareil de confiance : se souvenir de moi !</label>
+        </div>
       </form>
       <NavLink className="link" to="/signup">
         Pas encore de compte ? M'inscrire

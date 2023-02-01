@@ -1,5 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaSignOutAlt, FaUserCircle, FaNewspaper } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { axiosPrivate } from "../../api/axios";
 import useAuth from "../../hooks/useAuth";
 import RedLogo from "../../assets/icon-red.png";
 import useWindowSize from "../../hooks/useWindowSize";
@@ -10,9 +12,15 @@ export default function Header() {
   const { width } = useWindowSize();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setAuth("");
-    navigate("/");
+    try {
+      await axiosPrivate("/api/auth/logout");
+    } catch (err) {
+      toast.error("Erreur à la déconnexion");
+    } finally {
+      navigate("/");
+    }
   };
 
   return (

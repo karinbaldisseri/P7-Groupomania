@@ -5,14 +5,19 @@ const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState({});
+  const [persist, setPersist] = useState(
+    JSON.parse(localStorage.getItem("persist")) || false
+  );
 
   // wrap object passed in value in a useMemo in order to avoid unnecessary rerenders
   const values = useMemo(
     () => ({
       auth,
       setAuth,
+      persist,
+      setPersist,
     }),
-    [auth]
+    [auth, persist]
   );
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;
