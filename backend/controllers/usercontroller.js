@@ -68,7 +68,7 @@ exports.login = (req, res) => {
                                         isAdmin: user.isAdmin
                                         },
                                         `${process.env.JWT_TOKEN}`,
-                                        { expiresIn: '24h' } 
+                                        { expiresIn: `${process.env.JWT_TOKEN_EXPIRESIN}` } 
                                     )
                                 });
                             }
