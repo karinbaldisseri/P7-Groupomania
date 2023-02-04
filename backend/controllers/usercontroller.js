@@ -63,9 +63,9 @@ exports.login = (req, res) => {
                                 const refreshToken = jwt.sign({
                                     userId: user.id,
                                     isAdmin: user.isAdmin
-                                },
+                                    },
                                     `${process.env.JWT_REFRESHTOKEN}`,
-                                    { expiresIn: '90s' });
+                                    { expiresIn: `${process.env.JWT_REFRESHTOKEN_EXPIRESIN}` } );
 
                                 User.update({ refreshToken: refreshToken }, { where: { email: cryptoJsEmail } })
                                     .then(() => {
@@ -79,7 +79,7 @@ exports.login = (req, res) => {
                                             isAdmin: user.isAdmin
                                             },
                                             `${process.env.JWT_TOKEN}`,
-                                            { expiresIn: '30s' } 
+                                            { expiresIn: `${process.env.JWT_TOKEN_EXPIRESIN}` }  
                                             )
                                         });
                                     })
@@ -139,7 +139,7 @@ exports.handleRefreshToken = (req, res) => {
                             isAdmin: user.isAdmin
                             },
                             `${process.env.JWT_REFRESHTOKEN}`,
-                            { expiresIn: '90s' });
+                            { expiresIn: `${process.env.JWT_REFRESHTOKEN_EXPIRESIN}` } );
                         // Replace old Rt with new one in DB
                         User.update({ refreshToken: newRefreshToken }, { where: { id: decodedToken.userId } });
                         // send new RT in http only secure cookie
@@ -153,7 +153,7 @@ exports.handleRefreshToken = (req, res) => {
                                 isAdmin: decodedToken.isAdmin
                                 },
                                 `${process.env.JWT_TOKEN}`,
-                                { expiresIn: '30s' } 
+                                { expiresIn: `${process.env.JWT_TOKEN_EXPIRESIN}` }  
                             )
                         });
                     } catch (err) { 
