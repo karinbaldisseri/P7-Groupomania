@@ -36,6 +36,9 @@ const useAxiosPrivate = () => {
             "Compte désactivé, merci de contacter votre administrateur";
         } else if (status === 404) {
           error.response.statusText = "Erreur, données non disponibles";
+        } else if (status === 429) {
+          error.response.statusText =
+            "Nombre maximal d'échecs de connexion atteint : veuillez attendre 60 secondes avant de réessayer de vous connecter à votre compte";
         } else {
           error.response.statusText = "Erreur... Veuillez réessayer svp !";
         }
