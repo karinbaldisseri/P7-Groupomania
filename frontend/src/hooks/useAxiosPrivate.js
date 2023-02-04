@@ -30,21 +30,27 @@ const useAxiosPrivate = () => {
 
       const responseIntercept = axiosPrivate.interceptors.response.use(
         (response) => response,
+        // in async error handler for example if expired token
         async (error) => {
+          // get the previous request in axios
           const prevRequest = error?.config;
           const { status } = error.response;
           if (
+            // check if expired token
             error?.response?.data?.error?.message === "jwt expired" &&
+            // and check custom property on request = if hasn't been sent to avoid endless loop of this error
             !prevRequest?.sent
           ) {
             prevRequest.sent = true;
             const newToken = await refresh();
             prevRequest.headers.Authorization = `Bearer ${newToken}`;
+            // updating the request with new token and making the request again
             return axiosPrivate(prevRequest);
           }
           if (
             status === 401 &&
-            error?.response?.data?.error === "Expired RefreshToken"
+            error?.response?.data?.message ===
+              "Unauthorized Expired RefreshToken !"
           ) {
             navigate("/login", { state: { from: location }, replace: true });
           } else if (status === 500 || !error?.response) {
