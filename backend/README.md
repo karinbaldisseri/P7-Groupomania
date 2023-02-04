@@ -15,10 +15,7 @@ Projet n°7 du parcours Développeur Web d'OpenClassrooms : "Créez un réseau s
              React
 
 
-## 📦 Installation des packages et démarrage des serveurs
-
-Lien github de Groupomania (frontend et backend) : 
-https://github.com/karinbaldisseri/P7-Groupomania
+## 📦 Installation des packages et démarrage des serveurs du BACKEND uniquement:
 
 BACK-END : 
 Lien github de la partie back-end (incluant le fichiers .env.example ) : 
@@ -37,20 +34,6 @@ Le message suivant devrait s'afficher dans le terminal :
 Si le serveur s'exécute sur un autre port, celui-ci sera affiché dans la console à la place de port 3000. 
 
 
-FRONT-END :
-Lien github de la partie front-end : 
-https://github.com/karinbaldisseri/P7-Groupomania/tree/main/frontend
-à télécharger afin d'accéder à l'interface de l'API.
-
-Ensuite, positinnez-vous dans le dossier frontend et exécutez la commande :
-`npm install`
-pour installer les packages requis pour le fonctionnement du frontend et 
-
-ensuite exécutez la commande:
-`npm run start`
-pour démarrer le serveur du frontend -- Port 3306
-
-
 ## 🔐 Variables d'environnement 
 
 Dans le dossier backend, créez un fichier ".env" (ou changez ".env.example" en ".env") et déclarez les variables nécessaires selon les instructions du fichier ".env.example" pour connecter votre base de données Mysql à l'API et/ou voir les variables ci-dessous.
@@ -66,12 +49,6 @@ JWT_TOKEN="insert a token : lowercase & numbers at least 12 characters (preferab
 JWT_TOKEN_EXPIRESIN="insert token expiration / validity time - example : 15m"
 JWT_REFRESHTOKEN="insert a token : lowercase & numbers at least 12 characters (preferably UUID V4) "
 JWT_REFRESHTOKEN_EXPIRESIN="insert refreshtoken expiration / validity time - example : 1d"
-
-
-Dans le frontend, créez un fichier ".env" (ou changez ".env.example" en ".env") et déclarez les variables nécessaires selon les instructions du fichier ".env.example".
-Variables d'environnement nécessaires : 
-
-VITE_BASE_URL=insert baseURL (ex: localhost:port)
 
 
 ## ⚙️ Connection à Mysql
