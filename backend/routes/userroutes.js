@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/usercontroller');
 const auth = require('../middlewares/auth');
+const loginLimiter = require('../middlewares/login-limiter');
 const passwordValidation = require('../middlewares/password-validation');
 const emailValidation = require('../middlewares/email-validation');
 
 
 // ROUTES
 router.post('/signup', emailValidation ,passwordValidation, userController.signup);
-router.post('/login', userController.login);
+router.post('/login', loginLimiter, userController.login);
 router.put('/me/deactivate', auth, userController.deactivateUser);
 router.get('/refreshtoken', userController.handleRefreshToken);
 router.get('/logout', userController.logout);

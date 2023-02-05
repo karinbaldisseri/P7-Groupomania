@@ -10,20 +10,14 @@ function PostsFeed() {
   const [posts, setPosts] = useState(undefined);
   const [page, setPage] = useState(1);
   const errRef = useRef();
-  const effectRan = useRef(false);
 
   const [response, fetchError, loading, axiosFetch] = useAxiosFetchFunction();
 
   useEffect(() => {
-    if (effectRan.current === true) {
-      const fetchData = async () => {
-        await getAllPosts(axiosFetch, page);
-      };
-      fetchData();
-    }
-    return () => {
-      effectRan.current = true;
+    const fetchData = async () => {
+      await getAllPosts(axiosFetch, page);
     };
+    fetchData();
   }, [page]);
 
   useEffect(() => {
