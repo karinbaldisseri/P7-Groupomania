@@ -1,13 +1,34 @@
 @use "../../stylesUtils/" as *;
 
-.loginForm {
-  .labelAndInputContainer {
-    margin-bottom: 10px;
-  }
-  label {
-    width: fit-content;
-    @include mobiles {
-      width: 100%;
+.formContainer {
+  .loginForm {
+      .labelAndInputContainer {
+        margin-bottom: 10px;
+      }
+      label {
+        width: fit-content;
+  
+        @include mobiles {
+          width: 100%;
+        }
+      }
+      button {
+        margin-bottom: 10px;
+      }
+      .checkbox {
+        display: flex;
+        align-items: center;
+        margin: 0 auto 15px auto;
+        input {
+          background: $secondary-color;
+        }
+        label {
+          margin-left: 10px;
+          @include tablets {
+            margin-left: 0;
+          }
+        }
+      }
     }
-  }
 }
+

@@ -20,6 +20,9 @@ const loginUser = async (axiosFetch, email, password) => {
     url: "/api/auth/login",
     method: "POST",
     requestConfig: {
+      headers: {
+        withCredentials: true,
+      },
       data: { email, password },
     },
   });

@@ -47,7 +47,7 @@ Ensuite, positinnez-vous dans le dossier frontend et exécutez la commande :
 pour installer les packages requis pour le fonctionnement du frontend et 
 
 ensuite exécutez la commande:
-`npm run start`
+`npm run dev`
 pour démarrer le serveur du frontend -- Port 3306
 
 
