@@ -47,6 +47,7 @@ export default function SignupForm() {
       toast.success("Nouveau compte crée !");
       setInputs({ firstname: "", lastname: "", email: "", password: "", confirmPwd: "" });
       setValidInputs({ firstname: false, lastname: false, email: false, password: false });
+      setTimeout(() => { navigate("/login") }, 1000);
     }
     return () => {
       ignore = true;
@@ -82,7 +83,6 @@ export default function SignupForm() {
     await createUser(axiosFetch, firstname, lastname, email, password);
     setShowPwd(false);
     setShowConfirmPwd(false);
-    setTimeout(() => { navigate("/login") }, 1000);
   };
 
   return (
