@@ -82,7 +82,6 @@ export default function SignupForm() {
     await createUser(axiosFetch, firstname, lastname, email, password);
     setShowPwd(false);
     setShowConfirmPwd(false);
-    setTimeout(() => { navigate("/login") }, 1000);
   };
 
   return (
