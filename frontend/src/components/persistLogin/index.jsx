@@ -11,21 +11,17 @@ function PersistLogin() {
   const { auth, persist } = useAuth();
 
   useEffect(() => {
-    // if memoryleak add isMounted
-    // let isMounted = true;
     const verifyRefreshToken = async () => {
       try {
         await refresh();
       } catch (err) {
         toast.error("Accès invalide, veuillez vous reconnecter svp !");
       } finally {
-        /* isMounted && */ setIsLoading(false);
+        setIsLoading(false);
       }
     };
     // eslint-disable-next-line no-unused-expressions
     !auth?.token ? verifyRefreshToken() : setIsLoading(false);
-
-    // return () => isMounted = false; // clean up
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

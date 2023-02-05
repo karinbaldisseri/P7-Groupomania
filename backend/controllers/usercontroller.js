@@ -39,6 +39,11 @@ exports.signup = (req, res) => {
 
 // LOGIN
 exports.login = (req, res) => {
+    const cookies = req.cookies;
+    if (cookies?.jwt) {
+        // delete RT cookie as we are gonna send a new one
+        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+    }
     if (req.body.email && req.body.password) {
         const cryptoJsEmail = cryptojs.HmacSHA256(req.body.email, `${process.env.CRYPTOJS_EMAIL_KEY}`).toString();
         User.findOne({ attributes: ['id','email','password','isActive', 'isAdmin'], where: { email: cryptoJsEmail }})
@@ -58,9 +63,10 @@ exports.login = (req, res) => {
                                 const refreshToken = jwt.sign({
                                     userId: user.id,
                                     isAdmin: user.isAdmin
-                                },
+                                    },
                                     `${process.env.JWT_REFRESHTOKEN}`,
                                     { expiresIn: `${process.env.JWT_REFRESHTOKEN_EXPIRESIN}` } );
+
                                 User.update({ refreshToken: refreshToken }, { where: { email: cryptoJsEmail } })
                                     .then(() => {
                                         res.cookie('jwt', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 *1000});
@@ -95,29 +101,70 @@ exports.handleRefreshToken = (req, res) => {
     if (!cookies?.jwt) {
         return res.status(401).json({ error: 'Unauthorized request !' });
     } else {
-        const refreshTokn = cookies.jwt;
-        User.findOne({ where: { refreshToken: refreshTokn } })
+        const refreshToken = cookies.jwt;
+        // search user with RT we received
+        User.findOne({ where: { refreshToken: refreshToken } })
             .then((user) => {
+                // if didn't find user but received RT => means RT has already been used + doesn't exist anymore 
+                // => RT reuse Detection situation
                 if (!user) {
-                    return res.status(400).json({ message: 'Invalid User and/or password !' });
+                    // decode received RT and match userId to user in DB and delete RT in Db and clear Cookie
+                    try {
+                        // find "hackedUser" by its id in RT + delete RT in DB  and clear Cookie
+                        const decodedToken = jwt.verify(refreshToken, process.env.JWT_REFRESHTOKEN);
+                        User.update({ refreshToken: null }, { where: { id: decodedToken.userId } });
+                    } catch (err) {
+                        // if err means it couldn't decode RT + Rt is expired / no longer valid
+                        console.log(err);
+                    } finally {
+                        // attempt to use RT that has already been used and invalidated in Rt rotation
+                        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+                        return res.status(401).json({ message: 'Unauthorized !' });
+                    }
                 } else if (user.isActive === false) {
                     return res.status(403).json({ message: 'Account deactivated ! Please contact your admin.' });
                 } else {
-                    const decodedToken = jwt.verify(refreshTokn, process.env.JWT_REFRESHTOKEN);
-                    res.status(200).json({
-                        userId: decodedToken.userId,
-                        isAdmin: decodedToken.isAdmin,
-                        token: jwt.sign({
-                            userId: decodedToken.userId,
-                            isAdmin: decodedToken.isAdmin
+                    // we have a valid RT and issue a new accesstoken AND a new RT
+                    try {
+                        const decodedToken = jwt.verify(refreshToken, process.env.JWT_REFRESHTOKEN);
+                        // not "correct" User
+                        if (user.id !== decodedToken.userId) {
+                            User.update({ refreshToken: null }, { where: { id: decoded.userId } });
+                            res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+                            return res.status(401).json({ message: 'Unauthorized RT !' });
+                        }
+                        // RT valid and found user
+                        const newRefreshToken = jwt.sign({
+                            userId: user.id,
+                            isAdmin: user.isAdmin
                             },
-                            `${process.env.JWT_TOKEN}`,
-                            { expiresIn: `${process.env.JWT_TOKEN_EXPIRESIN}` } 
-                        )
-                    });
+                            `${process.env.JWT_REFRESHTOKEN}`,
+                            { expiresIn: `${process.env.JWT_REFRESHTOKEN_EXPIRESIN}` } );
+                        // Replace old Rt with new one in DB
+                        User.update({ refreshToken: newRefreshToken }, { where: { id: decodedToken.userId } });
+                        // send new RT in http only secure cookie
+                        res.cookie('jwt', newRefreshToken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+                        // and send new accessToken
+                        res.status(200).json({
+                            userId: decodedToken.userId,
+                            isAdmin: decodedToken.isAdmin,
+                            token: jwt.sign({
+                                userId: decodedToken.userId,
+                                isAdmin: decodedToken.isAdmin
+                                },
+                                `${process.env.JWT_TOKEN}`,
+                                { expiresIn: `${process.env.JWT_TOKEN_EXPIRESIN}` }  
+                            )
+                        });
+                    } catch (err) { 
+                        // if err we found the user with the correct Rt but Rt has expired => delete RT from database
+                        res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
+                        User.update({ refreshToken: null }, { where: { id: user.id } });
+                        return res.status(401).json({ message: 'Unauthorized Expired RefreshToken !' });
+                    } 
                 }
             })
-        .catch(()=> res.status(401).json({ error: "Expired RefreshToken" }));
+            .catch(() => res.status(401).json({ error: "Expired RefreshToken" }));
     }
 }
 
@@ -127,8 +174,8 @@ exports.logout = (req, res) => {
     if (!cookies?.jwt) {
         return res.status(204).json({ message: 'No content !' });
     } else {
-        const refreshTokn = cookies.jwt;
-        User.findOne({ where: { refreshToken: refreshTokn } })
+        const refreshToken = cookies.jwt;
+        User.findOne({ where: { refreshToken: refreshToken } })
             .then((user) => {
                 if (!user) {
                     // clear cookie => needs the same otions as when you create cookie apart from maxAge
@@ -136,7 +183,7 @@ exports.logout = (req, res) => {
                     return res.status(204).json({ message: 'No content !' });
                 } else {
                     // delete refreshToken in DB
-                    User.update({ refreshToken: null }, { where: { refreshToken: refreshTokn } })
+                    User.update({ refreshToken: null }, { where: { refreshToken: refreshToken } })
                         .then(() => res.status(200).json({ message: "User logged out !" }))
                         .catch(() => res.status(500).json({ error: 'Internal server error' }));
                     //clear cookie
