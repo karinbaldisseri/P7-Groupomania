@@ -13,6 +13,7 @@ Projet n°7 du parcours Développeur Web d'OpenClassrooms : "Créez un réseau s
              Sequelize
     CLIENT : vitejs
              React
+             CSS : Saas
 
 
 ## 📦 Installation des packages et démarrage des serveurs
